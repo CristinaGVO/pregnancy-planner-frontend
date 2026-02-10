@@ -7,6 +7,8 @@ import SignUpForm from './components/SignUpForm/SignUpForm';
 import SignInForm from './components/SignInForm/SignInForm';
 import Landing from './components/Landing/Landing';
 import Dashboard from './components/Dashboard/Dashboard';
+import AppointmentEdit from './components/AppointmentEdit/AppointmentEdit';
+
 
 import { UserContext } from './contexts/UserContext';
 
@@ -20,6 +22,8 @@ const App = () => {
         <Route path='/' element={user ? <Dashboard /> : <Landing />} />
         <Route path='/sign-up' element={<SignUpForm />} />
         <Route path='/sign-in' element={<SignInForm />} />
+        <Route path="/appointments/:id/edit" element={<AppointmentEdit />} />
+
       </Routes>
     </>
   );

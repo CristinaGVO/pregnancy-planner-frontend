@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext";
-import { getAppointments, createAppointment } from "../../services/appointmentsService";
+import { getAppointments, createAppointment, deleteAppointment } from "../../services/appointmentsService";
+
 
 
 export default function Dashboard() {
@@ -54,6 +55,23 @@ export default function Dashboard() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Delete this appointment?");
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const deleted = await deleteAppointment(token, id);
+
+      if (deleted.error) throw new Error(deleted.error);
+
+      setAppointments((prev) => prev.filter((a) => a.id !== id));
+      setMessage("Appointment deleted ✅");
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
   return (
     <div style={{ maxWidth: 700, margin: "30px auto" }}>
       <h2>Appointments</h2>
@@ -63,13 +81,20 @@ export default function Dashboard() {
       <form onSubmit={handleSubmit}>
         <h3>Create Appointment</h3>
 
-        <div>
-          <label>Title</label><br />
-          <input name="title" value={formData.title} onChange={handleChange} required />
+        <div style={{ marginBottom: 10 }}>
+          <label>Title</label>
+          <br />
+          <input
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+          />
         </div>
 
-        <div>
-          <label>Date Time (YYYY-MM-DD HH:MM:SS)</label><br />
+        <div style={{ marginBottom: 10 }}>
+          <label>Date Time (YYYY-MM-DD HH:MM:SS)</label>
+          <br />
           <input
             name="date_time"
             value={formData.date_time}
@@ -79,14 +104,25 @@ export default function Dashboard() {
           />
         </div>
 
-        <div>
-          <label>Location</label><br />
-          <input name="location" value={formData.location} onChange={handleChange} />
+        <div style={{ marginBottom: 10 }}>
+          <label>Location</label>
+          <br />
+          <input
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+          />
         </div>
 
-        <div>
-          <label>Notes</label><br />
-          <textarea name="notes" value={formData.notes} onChange={handleChange} />
+        <div style={{ marginBottom: 10 }}>
+          <label>Notes</label>
+          <br />
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            rows={3}
+          />
         </div>
 
         <button type="submit">Create</button>
@@ -98,9 +134,31 @@ export default function Dashboard() {
         <p>No appointments yet.</p>
       ) : (
         appointments.map((a) => (
-          <div key={a.id} style={{ border: "1px solid #ddd", padding: 12, marginBottom: 10 }}>
-            <div><b>{a.title}</b></div>
+          <div
+            key={a.id}
+            style={{
+              border: "1px solid #ddd",
+              padding: 12,
+              marginBottom: 10,
+              borderRadius: 8,
+            }}
+          >
+            <div>
+              <b>{a.title}</b>
+            </div>
             <div>{String(a.date_time)}</div>
+            {a.location && <div>{a.location}</div>}
+            {a.notes && <div>{a.notes}</div>}
+
+            <div style={{ marginTop: 10 }}>
+              <button type="button" onClick={() => handleDelete(a.id)}>
+                Delete
+              </button>
+              <button type="button" onClick={() => navigate(`/appointments/${a.id}/edit`)}>
+                Edit
+              </button>
+
+            </div>
           </div>
         ))
       )}
