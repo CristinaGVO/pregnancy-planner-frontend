@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from "react-router-dom";
+
 
 import NavBar from './components/NavBar/NavBar';
 import SignUpForm from './components/SignUpForm/SignUpForm';

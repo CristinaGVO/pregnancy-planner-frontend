@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../contexts/usercontext";
-import { getAppointments, createAppointment } from "../services/appointmentsService";
+import { UserContext } from "../../contexts/UserContext";
+import { getAppointments, createAppointment } from "../../services/appointmentsService";
+
 
 export default function Dashboard() {
   const { user } = useContext(UserContext);
