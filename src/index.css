@@ -1,71 +1,406 @@
-/* index.css (global) */
-* { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, Arial, sans-serif; }
-a { color: inherit; }
-/* Landing */
-.landing {
-  min-height: calc(100vh - 64px);
-  display: grid;
-  place-items: center;
-  padding: 24px 16px;
+/* ----------------------------
+   Pregnancy Planner Theme (Unisex Pastel)
+   Put EVERYTHING here (index.css)
+----------------------------- */
+
+:root {
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+
+  /* Base colors (more unisex / neutral) */
+  --bg: #f7f9fb;            /* neutral */
+  --surface: #ffffff;        /* cards */
+  --text: #1f2937;           /* slate-800 */
+  --muted: #6b7280;          /* slate-500 */
+  --border: #e7edf5;         /* clean soft border */
+
+  /* Pastel accents (soft + unisex) */
+  --pink: #f3b3c8;
+  --peach: #f6c7a6;
+  --mint: #aee7d8;
+  --sky: #a9d6ff;
+
+  /* Stronger accents for hover/focus */
+  --pink-strong: #ee94b2;
+  --peach-strong: #f2b58a;
+  --mint-strong: #86dcc8;
+  --sky-strong: #85c0ff;
+
+  /* UI tokens */
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
+  --shadow-soft: 0 6px 18px rgba(17, 24, 39, 0.05);
+
+  --ring: rgba(133, 192, 255, 0.45);
+  --danger: #f87171;
+  --success: #34d399;
 }
 
-.landing__container {
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--text);
+
+  /* More colorful pregnancy pastel background */
+  background:
+    /* Top-left: sky */
+    radial-gradient(900px 520px at 8% 8%, rgba(169, 214, 255, 0.35), transparent 60%),
+
+    /* Top-right: peach */
+    radial-gradient(850px 520px at 95% 10%, rgba(246, 199, 166, 0.32), transparent 62%),
+
+    /* Bottom-left: mint */
+    radial-gradient(900px 520px at 12% 96%, rgba(174, 231, 216, 0.30), transparent 60%),
+
+    /* Bottom-right: pink */
+    radial-gradient(820px 520px at 92% 92%, rgba(243, 179, 200, 0.28), transparent 62%),
+
+    /* Center glow to connect everything */
+    radial-gradient(700px 420px at 50% 50%, rgba(255, 255, 255, 0.70), transparent 70%),
+
+    /* Soft overall wash */
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.35)),
+
+    var(--bg);
+}
+
+/* Base elements */
+main {
   width: 100%;
-  max-width: 720px;
-  border: 1px solid #e6e6e6;
-  border-radius: 14px;
-  padding: 28px;
 }
 
-.landing__title {
-  font-size: 40px;
-  line-height: 1.1;
-  margin: 0 0 10px;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.landing__subtitle {
-  margin: 0 0 18px;
-  font-size: 16px;
-  line-height: 1.4;
+p {
+  margin: 0.5rem 0;
+  color: var(--muted);
 }
 
-.landing__actions {
+h1,
+h2,
+h3 {
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+
+/* Layout */
+.container {
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+}
+
+.card + .card {
+  margin-top: 14px;
+}
+
+.card-title {
   display: flex;
+  align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
-  margin: 12px 0 18px;
+  margin: 0 0 12px 0;
 }
 
-.btn {
+/* Badges */
+.badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 10px;
-  text-decoration: none;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--text);
+}
+
+.badge.pink {
+  background: rgba(243, 179, 200, 0.18);
+}
+.badge.peach {
+  background: rgba(246, 199, 166, 0.20);
+}
+.badge.mint {
+  background: rgba(174, 231, 216, 0.22);
+}
+.badge.sky {
+  background: rgba(169, 214, 255, 0.22);
+}
+
+/* Buttons */
+button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
   font-weight: 600;
-  border: 1px solid #d6d6d6;
+  transition: transform 120ms ease, box-shadow 120ms ease,
+    border-color 120ms ease, background 120ms ease;
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
 }
 
-.btn--primary {
-  background: #111;
-  color: #fff;
-  border-color: #111;
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  border-color: rgba(133, 192, 255, 0.7);
 }
 
-.btn--secondary {
+button:active {
+  transform: translateY(0);
+}
+
+button.primary {
+  border: 1px solid rgba(169, 214, 255, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(169, 214, 255, 0.45),
+    rgba(174, 231, 216, 0.35)
+  );
+}
+
+button.ghost {
   background: transparent;
-  color: inherit;
 }
 
-.landing__list {
-  margin: 0;
-  padding-left: 18px;
-  line-height: 1.6;
+button.danger {
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.08);
 }
 
-.landing__footnote {
-  margin-top: 18px;
-  font-size: 14px;
+/* Inputs */
+input,
+textarea,
+select {
+  width: 100%;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  outline: none;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(133, 192, 255, 0.85);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+/* Forms */
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Navbar base (optional if you add className="navbar") */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar a {
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Alerts */
+.alert {
+  border: 1px solid var(--border);
+  background: rgba(169, 214, 255, 0.16);
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text);
+  margin: 12px 0 16px;
+}
+
+.alert.success {
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.alert.error {
+  background: rgba(248, 113, 113, 0.10);
+}
+
+/* Chips for filters */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.chip {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+}
+
+.chip.active {
+  border-color: rgba(169, 214, 255, 0.55);
+  background: rgba(169, 214, 255, 0.18);
+}
+
+/* Dashboard helper classes */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.lead {
+  color: var(--text);
+  margin: 6px 0;
+}
+
+.actions-row {
+  display: flex;
+  gap: 10px;
+}
+
+.actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filters {
+  margin: 12px 0 14px;
+}
+
+.next-appt {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.list-item-main {
+  flex: 1;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.notes {
+  margin-top: 10px;
+  color: var(--text);
+  background: rgba(169, 214, 255, 0.12);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 12px;
 }

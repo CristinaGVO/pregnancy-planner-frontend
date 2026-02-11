@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../contexts/UserContext";
+
 import {
   getAppointments,
   createAppointment,
@@ -18,9 +19,15 @@ const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function parseDateTime(dt) {
   if (!dt) return null;
-  const s = String(dt).replace(" ", "T"); // "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
-  const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? null : d;
+
+  // 1) Try direct parse first (handles RFC strings)
+  const direct = new Date(dt);
+  if (!Number.isNaN(direct.getTime())) return direct;
+
+  // 2) Fallback for "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
+  const s = String(dt).replace(" ", "T");
+  const fallback = new Date(s);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
 }
 
 function formatShort(dt) {
@@ -29,28 +36,49 @@ function formatShort(dt) {
   return d.toLocaleString();
 }
 
+// backend -> input[type=date] needs "YYYY-MM-DD"
+function toDateInputValue(value) {
+  if (!value) return "";
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function isErrorPayload(x) {
+  return x && typeof x === "object" && (x.error || x.err);
+}
+
 export default function Dashboard() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [appointments, setAppointments] = useState([]);
-  const [message, setMessage] = useState("");
-  const [filter, setFilter] = useState("upcoming"); // "all" | "upcoming" | "past"
+  const [filter, setFilter] = useState("upcoming"); // all | upcoming | past
   const [loading, setLoading] = useState(true);
 
-  // Pregnancy profile
+  // nicer alerts
+  const [alert, setAlert] = useState({ kind: "", text: "" });
+  const showAlert = (kind, text) => setAlert({ kind, text });
+
+  // pregnancy profile
   const [profile, setProfile] = useState(null);
   const [profileForm, setProfileForm] = useState({
     due_date: "",
     baby_nickname: "",
   });
 
-  // Create appointment form
+  // appointment create form
   const [formData, setFormData] = useState({
     title: "",
     date: "",
     time: "",
-    doctor_name: "",
+    provider_name: "",
     appointment_type: "",
     status: "scheduled",
     location: "",
@@ -59,24 +87,32 @@ export default function Dashboard() {
 
   async function refreshData() {
     try {
+      setLoading(true);
+      setAlert({ kind: "", text: "" });
+
       const token = localStorage.getItem("token");
 
-      // load appointments
+      // appointments
       const apptData = await getAppointments(token);
+      if (isErrorPayload(apptData)) throw new Error(apptData.error || apptData.err);
+
       setAppointments(Array.isArray(apptData) ? apptData : []);
 
-      // load pregnancy profile
+      // profile
       const prof = await getProfile(token);
-      setProfile(prof);
 
-      if (prof) {
+      if (!prof || isErrorPayload(prof)) {
+        setProfile(null);
+        setProfileForm({ due_date: "", baby_nickname: "" });
+      } else {
+        setProfile(prof);
         setProfileForm({
-          due_date: prof.due_date || "",
+          due_date: toDateInputValue(prof.due_date),
           baby_nickname: prof.baby_nickname || "",
         });
       }
     } catch (error) {
-      setMessage(error?.message || "Error loading data");
+      showAlert("error", error?.message || "Error loading data");
     } finally {
       setLoading(false);
     }
@@ -91,18 +127,25 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
+  const dueDateISO = useMemo(() => {
+    if (profileForm.due_date) return profileForm.due_date;
+    return profile ? toDateInputValue(profile.due_date) : "";
+  }, [profileForm.due_date, profile]);
+
   const weeksLeft = useMemo(() => {
-    if (!profile?.due_date) return null;
+    if (!dueDateISO) return null;
+
+    const due = new Date(`${dueDateISO}T00:00:00`);
+    if (Number.isNaN(due.getTime())) return null;
 
     const today = new Date();
-    const due = new Date(profile.due_date + "T00:00:00");
-
-    const diffMs = due - today;
+    const diffMs = due.getTime() - today.getTime();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    const w = Math.max(0, Math.ceil(diffDays / 7));
+    const w = Math.ceil(diffDays / 7);
 
-    return w;
-  }, [profile]);
+    if (!Number.isFinite(w)) return null;
+    return Math.max(0, w);
+  }, [dueDateISO]);
 
   const sortedAppointments = useMemo(() => {
     const copy = [...appointments];
@@ -125,24 +168,30 @@ export default function Dashboard() {
     });
   }, [sortedAppointments, filter]);
 
-  // Next appointment (future + scheduled)
+  // ✅ FIXED: Next appointment now handles parsing + status normalization robustly
   const nextAppointment = useMemo(() => {
     const now = new Date();
-    return sortedAppointments.find((a) => {
-      const d = parseDateTime(a.date_time);
-      if (!d) return false;
-      return d >= now && (a.status ?? "scheduled") === "scheduled";
-    });
+
+    const upcoming = sortedAppointments
+      .map((a) => {
+        const d = parseDateTime(a.date_time);
+        const status = String(a.status ?? "scheduled").toLowerCase().trim();
+        return { a, d, status };
+      })
+      .filter(({ d, status }) => d && d >= now && status === "scheduled")
+      .sort((x, y) => x.d - y.d);
+
+    return upcoming.length ? upcoming[0].a : null;
   }, [sortedAppointments]);
 
   const handleChange = (e) => {
-    setMessage("");
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setAlert({ kind: "", text: "" });
+    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleCreateAppointment = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setAlert({ kind: "", text: "" });
 
     try {
       if (!formData.date || !formData.time) {
@@ -151,10 +200,11 @@ export default function Dashboard() {
 
       const token = localStorage.getItem("token");
 
+      // NOTE: backend expects doctor_name (per your current DB/API)
       const payload = {
         title: formData.title,
         date_time: `${formData.date} ${formData.time}:00`,
-        doctor_name: formData.doctor_name || null,
+        doctor_name: formData.provider_name || null, // mapped to backend field
         appointment_type: formData.appointment_type || null,
         status: formData.status || "scheduled",
         location: formData.location || null,
@@ -162,10 +212,7 @@ export default function Dashboard() {
       };
 
       const created = await createAppointment(token, payload);
-
-      if (created?.error) {
-        throw new Error(created.error);
-      }
+      if (isErrorPayload(created)) throw new Error(created.error || created.err);
 
       await refreshData();
 
@@ -173,16 +220,16 @@ export default function Dashboard() {
         title: "",
         date: "",
         time: "",
-        doctor_name: "",
+        provider_name: "",
         appointment_type: "",
         status: "scheduled",
         location: "",
         notes: "",
       });
 
-      setMessage("Appointment created ✅");
+      showAlert("success", "Appointment created ✅");
     } catch (error) {
-      setMessage(error?.message || "Something went wrong");
+      showAlert("error", error?.message || "Error creating appointment");
     }
   };
 
@@ -193,21 +240,18 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const deleted = await deleteAppointment(token, id);
-
-      if (deleted?.error) {
-        throw new Error(deleted.error);
-      }
+      if (isErrorPayload(deleted)) throw new Error(deleted.error || deleted.err);
 
       await refreshData();
-      setMessage("Appointment deleted ✅");
+      showAlert("success", "Appointment deleted ✅");
     } catch (error) {
-      setMessage(error?.message || "Something went wrong");
+      showAlert("error", error?.message || "Error deleting appointment");
     }
   };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setAlert({ kind: "", text: "" });
 
     try {
       const token = localStorage.getItem("token");
@@ -216,60 +260,70 @@ export default function Dashboard() {
         throw new Error("Please select a due date");
       }
 
-      // If profile exists -> PUT, else -> POST
-      const result = profile
-        ? await updateProfile(token, profileForm)
-        : await createProfile(token, profileForm);
+      const payload = {
+        due_date: profileForm.due_date,
+        baby_nickname: profileForm.baby_nickname || null,
+      };
 
-      if (result?.error) throw new Error(result.error);
+      const result = profile
+        ? await updateProfile(token, payload)
+        : await createProfile(token, payload);
+
+      if (isErrorPayload(result)) throw new Error(result.error || result.err);
 
       setProfile(result);
-      setMessage(profile ? "Profile updated ✅" : "Profile saved ✅");
+      setProfileForm({
+        due_date: toDateInputValue(result.due_date),
+        baby_nickname: result.baby_nickname || "",
+      });
+
+      showAlert("success", profile ? "Profile updated ✅" : "Profile saved ✅");
     } catch (error) {
-      setMessage(error?.message || "Error saving profile");
+      showAlert("error", error?.message || "Error saving profile");
     }
   };
 
   return (
-    <div style={{ maxWidth: 820, margin: "30px auto", padding: 16 }}>
-      <h2>Dashboard</h2>
+    <div className="container">
+      <div className="page-header">
+        <div>
+          <h2>Dashboard</h2>
+          <p className="muted">
+            Track appointments and your pregnancy timeline in one place.
+          </p>
+        </div>
+        <span className="badge sky">Logged in</span>
+      </div>
 
-      {message && <p>{message}</p>}
+      {alert.text && <div className={`alert ${alert.kind}`}>{alert.text}</div>}
 
       {/* Pregnancy Profile */}
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: 10,
-          padding: 16,
-          marginBottom: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Pregnancy</h3>
+      <section className="card">
+        <div className="card-title">
+          <h3>Pregnancy</h3>
+          <span className="badge mint">Due Date</span>
+        </div>
 
         {loading ? (
-          <p>Loading...</p>
+          <p className="muted">Loading...</p>
         ) : profile ? (
           <>
-            <p style={{ margin: "6px 0" }}>
-              <b>{weeksLeft}</b> weeks left until your due date ({profile.due_date})
-              {profile.baby_nickname ? ` • Nickname: ${profile.baby_nickname}` : ""}
-            </p>
+            {weeksLeft !== null ? (
+              <p className="lead">
+                <b>{weeksLeft}</b> weeks left{" "}
+                <span className="muted">• due {dueDateISO}</span>
+                {profileForm.baby_nickname ? (
+                  <span className="muted"> • {profileForm.baby_nickname}</span>
+                ) : null}
+              </p>
+            ) : (
+              <p className="muted">Add a valid due date to calculate weeks left.</p>
+            )}
 
-            <form
-              onSubmit={handleProfileSubmit}
-              style={{ display: "grid", gap: 10, marginTop: 10 }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 10,
-                }}
-              >
+            <form className="form-grid" onSubmit={handleProfileSubmit}>
+              <div className="grid-2">
                 <div>
                   <label>Due Date</label>
-                  <br />
                   <input
                     type="date"
                     value={profileForm.due_date}
@@ -277,13 +331,11 @@ export default function Dashboard() {
                       setProfileForm((p) => ({ ...p, due_date: e.target.value }))
                     }
                     required
-                    style={{ width: "100%" }}
                   />
                 </div>
 
                 <div>
                   <label>Baby Nickname (optional)</label>
-                  <br />
                   <input
                     value={profileForm.baby_nickname}
                     onChange={(e) =>
@@ -292,36 +344,26 @@ export default function Dashboard() {
                         baby_nickname: e.target.value,
                       }))
                     }
-                    style={{ width: "100%" }}
+                    placeholder="e.g. Peanut"
                   />
                 </div>
               </div>
 
-              <div>
-                <button type="submit">Save Profile</button>
+              <div className="actions-row">
+                <button className="primary" type="submit">
+                  Save Profile
+                </button>
               </div>
             </form>
           </>
         ) : (
           <>
-            <p style={{ margin: "6px 0" }}>
-              Add your due date to see how many weeks are left.
-            </p>
+            <p className="muted">Add your due date to see weeks left.</p>
 
-            <form
-              onSubmit={handleProfileSubmit}
-              style={{ display: "grid", gap: 10, marginTop: 10 }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 10,
-                }}
-              >
+            <form className="form-grid" onSubmit={handleProfileSubmit}>
+              <div className="grid-2">
                 <div>
                   <label>Due Date</label>
-                  <br />
                   <input
                     type="date"
                     value={profileForm.due_date}
@@ -329,13 +371,11 @@ export default function Dashboard() {
                       setProfileForm((p) => ({ ...p, due_date: e.target.value }))
                     }
                     required
-                    style={{ width: "100%" }}
                   />
                 </div>
 
                 <div>
                   <label>Baby Nickname (optional)</label>
-                  <br />
                   <input
                     value={profileForm.baby_nickname}
                     onChange={(e) =>
@@ -344,165 +384,128 @@ export default function Dashboard() {
                         baby_nickname: e.target.value,
                       }))
                     }
-                    style={{ width: "100%" }}
+                    placeholder="e.g. Peanut"
                   />
                 </div>
               </div>
 
-              <div>
-                <button type="submit">Save</button>
+              <div className="actions-row">
+                <button className="primary" type="submit">
+                  Save
+                </button>
               </div>
             </form>
           </>
         )}
-      </div>
+      </section>
 
       {/* Next Appointment */}
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: 10,
-          padding: 16,
-          marginBottom: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Next Appointment</h3>
+      <section className="card">
+        <div className="card-title">
+          <h3>Next Appointment</h3>
+          <span className="badge peach">Upcoming</span>
+        </div>
 
         {loading ? (
-          <p>Loading...</p>
+          <p className="muted">Loading...</p>
         ) : nextAppointment ? (
-          <>
-            <div style={{ fontWeight: 700 }}>{nextAppointment.title}</div>
-            <div>{formatShort(nextAppointment.date_time)}</div>
-            {nextAppointment.doctor_name && (
-              <div>Provider: {nextAppointment.doctor_name}</div>
-            )}
-            {nextAppointment.appointment_type && (
-              <div>Type: {nextAppointment.appointment_type}</div>
-            )}
-            <div>Status: {nextAppointment.status ?? "scheduled"}</div>
+          <div className="next-appt">
+            <div>
+              <div className="strong">{nextAppointment.title}</div>
+              <div className="muted">{formatShort(nextAppointment.date_time)}</div>
+              {nextAppointment.doctor_name ? (
+                <div className="muted">Provider: {nextAppointment.doctor_name}</div>
+              ) : null}
+              {nextAppointment.appointment_type ? (
+                <div className="muted">Type: {nextAppointment.appointment_type}</div>
+              ) : null}
+              <div className="muted">
+                Status: {String(nextAppointment.status ?? "scheduled")}
+              </div>
+            </div>
 
-            <div style={{ marginTop: 10 }}>
+            <div className="actions-col">
               <button
                 type="button"
-                onClick={() =>
-                  navigate(`/appointments/${nextAppointment.id}/edit`)
-                }
+                onClick={() => navigate(`/appointments/${nextAppointment.id}/edit`)}
               >
                 Edit
               </button>
             </div>
-          </>
+          </div>
         ) : (
-          <p>No upcoming scheduled appointments.</p>
+          <p className="muted">No upcoming scheduled appointments.</p>
         )}
-      </div>
+      </section>
 
       {/* Create Appointment */}
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: 10,
-          padding: 16,
-          marginBottom: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Create Appointment</h3>
+      <section className="card">
+        <div className="card-title">
+          <h3>Create Appointment</h3>
+          <span className="badge sky">Add</span>
+        </div>
 
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 10 }}>
+        <form className="form-grid" onSubmit={handleCreateAppointment}>
           <div>
             <label>Title</label>
-            <br />
             <input
               name="title"
               value={formData.title}
               onChange={handleChange}
               required
-              style={{ width: "100%" }}
+              placeholder="e.g. OB Visit"
             />
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div className="grid-2">
             <div>
               <label>Date</label>
-              <br />
               <input
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
                 required
-                style={{ width: "100%" }}
               />
             </div>
-
             <div>
               <label>Time</label>
-              <br />
               <input
                 type="time"
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
                 required
-                style={{ width: "100%" }}
               />
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div className="grid-2">
             <div>
               <label>Provider Name</label>
-              <br />
               <input
-                name="doctor_name"
-                value={formData.doctor_name}
+                name="provider_name"
+                value={formData.provider_name}
                 onChange={handleChange}
-                style={{ width: "100%" }}
+                placeholder="e.g. Dr. Martinez"
               />
             </div>
 
             <div>
               <label>Appointment Type</label>
-              <br />
               <input
                 name="appointment_type"
                 value={formData.appointment_type}
                 onChange={handleChange}
-                placeholder="e.g. Ultrasound, OB Visit, Lab, Class..."
-                style={{ width: "100%" }}
+                placeholder="e.g. Ultrasound, Lab, Class..."
               />
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div className="grid-2">
             <div>
               <label>Status</label>
-              <br />
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                style={{ width: "100%" }}
-              >
+              <select name="status" value={formData.status} onChange={handleChange}>
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -513,107 +516,111 @@ export default function Dashboard() {
 
             <div>
               <label>Location</label>
-              <br />
               <input
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                style={{ width: "100%" }}
+                placeholder="e.g. UW Medicine"
               />
             </div>
           </div>
 
           <div>
             <label>Notes</label>
-            <br />
             <textarea
               name="notes"
               value={formData.notes}
               onChange={handleChange}
+              placeholder="Anything you want to remember..."
               rows={3}
-              style={{ width: "100%" }}
             />
           </div>
 
-          <div>
-            <button type="submit">Create</button>
+          <div className="actions-row">
+            <button className="primary" type="submit">
+              Create
+            </button>
           </div>
         </form>
-      </div>
+      </section>
 
-      {/* Filter */}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          alignItems: "center",
-          marginBottom: 10,
-        }}
-      >
-        <strong>Filter:</strong>
-        <button type="button" onClick={() => setFilter("all")}>
-          All
-        </button>
-        <button type="button" onClick={() => setFilter("upcoming")}>
-          Upcoming
-        </button>
-        <button type="button" onClick={() => setFilter("past")}>
-          Past
-        </button>
-      </div>
-
-      {/* List */}
-      <h3>Appointments</h3>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : filteredAppointments.length === 0 ? (
-        <p>No appointments for this filter.</p>
-      ) : (
-        filteredAppointments.map((a) => (
-          <div
-            key={a.id}
-            style={{
-              border: "1px solid #ddd",
-              padding: 12,
-              marginBottom: 10,
-              borderRadius: 10,
-            }}
+      {/* Filters */}
+      <div className="filters">
+        <div className="chips">
+          <span className="muted strong">Filter:</span>
+          <button
+            type="button"
+            className={`chip ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 10,
-              }}
-            >
-              <div>
-                <div style={{ fontWeight: 700 }}>{a.title}</div>
-                <div>{formatShort(a.date_time)}</div>
-                {a.doctor_name && <div>Provider: {a.doctor_name}</div>}
-                {a.appointment_type && <div>Type: {a.appointment_type}</div>}
-                <div>Status: {a.status ?? "scheduled"}</div>
-                {a.location && <div>Location: {a.location}</div>}
-                {a.notes && <div>Notes: {a.notes}</div>}
-              </div>
+            All
+          </button>
+          <button
+            type="button"
+            className={`chip ${filter === "upcoming" ? "active" : ""}`}
+            onClick={() => setFilter("upcoming")}
+          >
+            Upcoming
+          </button>
+          <button
+            type="button"
+            className={`chip ${filter === "past" ? "active" : ""}`}
+            onClick={() => setFilter("past")}
+          >
+            Past
+          </button>
+        </div>
+      </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/appointments/${a.id}/edit`)}
-                >
-                  Edit
-                </button>
-                <button type="button" onClick={() => handleDelete(a.id)}>
-                  Delete
-                </button>
+      {/* Appointments List */}
+      <section className="card">
+        <div className="card-title">
+          <h3>Appointments</h3>
+          <span className="badge pink">{filteredAppointments.length}</span>
+        </div>
+
+        {loading ? (
+          <p className="muted">Loading...</p>
+        ) : filteredAppointments.length === 0 ? (
+          <p className="muted">No appointments for this filter.</p>
+        ) : (
+          <div className="list">
+            {filteredAppointments.map((a) => (
+              <div key={a.id} className="list-item">
+                <div className="list-item-main">
+                  <div className="strong">{a.title}</div>
+                  <div className="muted">{formatShort(a.date_time)}</div>
+
+                  <div className="meta">
+                    {a.doctor_name ? <span>Provider: {a.doctor_name}</span> : null}
+                    {a.appointment_type ? <span>Type: {a.appointment_type}</span> : null}
+                    <span>Status: {String(a.status ?? "scheduled")}</span>
+                    {a.location ? <span>Location: {a.location}</span> : null}
+                  </div>
+
+                  {a.notes ? <p className="notes">{a.notes}</p> : null}
+                </div>
+
+                <div className="actions-col">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/appointments/${a.id}/edit`)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={() => handleDelete(a.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))
-      )}
+        )}
+      </section>
     </div>
   );
 }
-
-
