@@ -8,6 +8,7 @@ import SignInForm from './components/SignInForm/SignInForm';
 import Landing from './components/Landing/Landing';
 import Dashboard from './components/Dashboard/Dashboard';
 import AppointmentEdit from './components/AppointmentEdit/AppointmentEdit';
+import "./index.css";
 
 
 import { UserContext } from './contexts/UserContext';

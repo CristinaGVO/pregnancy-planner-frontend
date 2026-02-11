@@ -7,6 +7,15 @@ import {
   updateAppointment,
 } from "../../services/appointmentsService";
 
+const TYPE_OPTIONS = ["OB Visit", "Ultrasound", "Lab", "Class", "Other"];
+const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
+
+function splitDateTime(dt) {
+  if (!dt) return { date: "", time: "" };
+  const s = String(dt).replace(" ", "T");
+  return { date: s.slice(0, 10), time: s.slice(11, 16) };
+}
+
 export default function AppointmentEdit() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -17,7 +26,11 @@ export default function AppointmentEdit() {
 
   const [formData, setFormData] = useState({
     title: "",
-    date_time: "",
+    date: "",
+    time: "",
+    doctor_name: "",
+    appointment_type: "",
+    status: "scheduled",
     location: "",
     notes: "",
   });
@@ -28,17 +41,22 @@ export default function AppointmentEdit() {
       return;
     }
 
-    async function loadAppointment() {
+    async function load() {
       try {
         const token = localStorage.getItem("token");
         const data = await getAppointmentById(token, id);
 
         if (data.error) throw new Error(data.error);
 
-        // Prefill ✅
+        const { date, time } = splitDateTime(data.date_time);
+
         setFormData({
           title: data.title || "",
-          date_time: formatForInput(data.date_time),
+          date,
+          time,
+          doctor_name: data.doctor_name || "",
+          appointment_type: data.appointment_type || "",
+          status: data.status || "scheduled",
           location: data.location || "",
           notes: data.notes || "",
         });
@@ -50,47 +68,64 @@ export default function AppointmentEdit() {
       }
     }
 
-    loadAppointment();
+    load();
   }, [user, navigate, id]);
 
   const handleChange = (e) => {
     setMessage("");
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+
     try {
+      if (!formData.date || !formData.time) {
+        throw new Error("Please select date and time");
+      }
+
       const token = localStorage.getItem("token");
 
-      // Si estás usando input type="datetime-local", conviértelo a "YYYY-MM-DD HH:MM:SS"
       const payload = {
-        ...formData,
-        date_time: formData.date_time.replace("T", " ") + ":00",
+        title: formData.title,
+        date_time: `${formData.date} ${formData.time}:00`,
+        doctor_name: formData.doctor_name || null,
+        appointment_type: formData.appointment_type || null,
+        status: formData.status || "scheduled",
+        location: formData.location || null,
+        notes: formData.notes || null,
       };
 
       const updated = await updateAppointment(token, id, payload);
-
       if (updated.error) throw new Error(updated.error);
 
-      setMessage("Appointment updated ✅");
-
-      // vuelve al dashboard
       navigate("/");
     } catch (err) {
       setMessage(err.message);
     }
   };
 
-  if (loading) return <p style={{ maxWidth: 700, margin: "30px auto" }}>Loading...</p>;
+  if (loading) {
+    return <p style={{ maxWidth: 820, margin: "30px auto" }}>Loading...</p>;
+  }
 
   return (
-    <div style={{ maxWidth: 700, margin: "30px auto" }}>
+    <div style={{ maxWidth: 820, margin: "30px auto", padding: 16 }}>
       <h2>Edit Appointment</h2>
       {message && <p>{message}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 10 }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: 10,
+          padding: 16,
+          display: "grid",
+          gap: 10,
+        }}
+      >
+        <div>
           <label>Title</label>
           <br />
           <input
@@ -98,32 +133,100 @@ export default function AppointmentEdit() {
             value={formData.title}
             onChange={handleChange}
             required
+            style={{ width: "100%" }}
           />
         </div>
 
-        <div style={{ marginBottom: 10 }}>
-          <label>Date Time</label>
-          <br />
-          <input
-            type="datetime-local"
-            name="date_time"
-            value={formData.date_time}
-            onChange={handleChange}
-            required
-          />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div>
+            <label>Date</label>
+            <br />
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          <div>
+            <label>Time</label>
+            <br />
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              required
+              style={{ width: "100%" }}
+            />
+          </div>
         </div>
 
-        <div style={{ marginBottom: 10 }}>
-          <label>Location</label>
-          <br />
-          <input
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-          />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div>
+            <label>Doctor Name</label>
+            <br />
+            <input
+              name="doctor_name"
+              value={formData.doctor_name}
+              onChange={handleChange}
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          <div>
+            <label>Appointment Type</label>
+            <br />
+            <select
+              name="appointment_type"
+              value={formData.appointment_type}
+              onChange={handleChange}
+              style={{ width: "100%" }}
+            >
+              <option value="">Select...</option>
+              {TYPE_OPTIONS.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div style={{ marginBottom: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div>
+            <label>Status</label>
+            <br />
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              style={{ width: "100%" }}
+            >
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label>Location</label>
+            <br />
+            <input
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              style={{ width: "100%" }}
+            />
+          </div>
+        </div>
+
+        <div>
           <label>Notes</label>
           <br />
           <textarea
@@ -131,28 +234,17 @@ export default function AppointmentEdit() {
             value={formData.notes}
             onChange={handleChange}
             rows={3}
+            style={{ width: "100%" }}
           />
         </div>
 
-        <button type="submit">Save</button>
-        <button
-          type="button"
-          style={{ marginLeft: 10 }}
-          onClick={() => navigate("/")}
-        >
-          Cancel
-        </button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="submit">Save</button>
+          <button type="button" onClick={() => navigate("/")}>
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
-}
-
-// Convierte "2026-02-15T18:30:00" o "2026-02-15 18:30:00" a "YYYY-MM-DDTHH:MM"
-function formatForInput(dateTime) {
-  if (!dateTime) return "";
-  const str = String(dateTime);
-  // si viene con espacio, cambia a T
-  const cleaned = str.includes(" ") ? str.replace(" ", "T") : str;
-  // corta segundos si existen
-  return cleaned.slice(0, 16);
 }
