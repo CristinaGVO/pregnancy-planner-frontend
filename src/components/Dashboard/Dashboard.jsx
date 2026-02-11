@@ -2,18 +2,13 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../contexts/UserContext";
-import {
-  getAppointments,
-  createAppointment,
-  deleteAppointment,
-} from "../../services/appointmentsService";
+import { getAppointments,createAppointment,deleteAppointment} from "../../services/appointmentsService";
 
-const TYPE_OPTIONS = ["OB Visit", "Ultrasound", "Lab", "Class", "Other"];
 const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function parseDateTime(dt) {
   if (!dt) return null;
-  const s = String(dt).replace(" ", "T"); // "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
+  const s = String(dt).replace(" ", "T");
   const d = new Date(s);
   return Number.isNaN(d.getTime()) ? null : d;
 }
@@ -231,7 +226,13 @@ export default function Dashboard() {
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Date</label>
               <br />
@@ -259,7 +260,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Doctor Name</label>
               <br />
@@ -271,26 +278,27 @@ export default function Dashboard() {
               />
             </div>
 
+            {/* ✅ Appointment Type ahora es input */}
             <div>
               <label>Appointment Type</label>
               <br />
-              <select
+              <input
                 name="appointment_type"
                 value={formData.appointment_type}
                 onChange={handleChange}
+                placeholder="e.g. Ultrasound, OB Visit, Lab, Class..."
                 style={{ width: "100%" }}
-              >
-                <option value="">Select...</option>
-                {TYPE_OPTIONS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Status</label>
               <br />
@@ -339,11 +347,19 @@ export default function Dashboard() {
       </div>
 
       {/* ✅ Extra #2 */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
+      <div
+        style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}
+      >
         <strong>Filter:</strong>
-        <button type="button" onClick={() => setFilter("all")}>All</button>
-        <button type="button" onClick={() => setFilter("upcoming")}>Upcoming</button>
-        <button type="button" onClick={() => setFilter("past")}>Past</button>
+        <button type="button" onClick={() => setFilter("all")}>
+          All
+        </button>
+        <button type="button" onClick={() => setFilter("upcoming")}>
+          Upcoming
+        </button>
+        <button type="button" onClick={() => setFilter("past")}>
+          Past
+        </button>
       </div>
 
       {/* List */}
@@ -377,7 +393,10 @@ export default function Dashboard() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <button type="button" onClick={() => navigate(`/appointments/${a.id}/edit`)}>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/appointments/${a.id}/edit`)}
+                >
                   Edit
                 </button>
                 <button type="button" onClick={() => handleDelete(a.id)}>

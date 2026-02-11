@@ -2,3 +2,70 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: system-ui, Arial, sans-serif; }
 a { color: inherit; }
+/* Landing */
+.landing {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.landing__container {
+  width: 100%;
+  max-width: 720px;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.landing__title {
+  font-size: 40px;
+  line-height: 1.1;
+  margin: 0 0 10px;
+}
+
+.landing__subtitle {
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.landing__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 18px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #d6d6d6;
+}
+
+.btn--primary {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: inherit;
+}
+
+.landing__list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+.landing__footnote {
+  margin-top: 18px;
+  font-size: 14px;
+}

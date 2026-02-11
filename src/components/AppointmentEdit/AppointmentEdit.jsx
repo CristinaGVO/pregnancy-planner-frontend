@@ -7,7 +7,6 @@ import {
   updateAppointment,
 } from "../../services/appointmentsService";
 
-const TYPE_OPTIONS = ["OB Visit", "Ultrasound", "Lab", "Class", "Other"];
 const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function splitDateTime(dt) {
@@ -177,22 +176,17 @@ export default function AppointmentEdit() {
             />
           </div>
 
+          {/* ✅ Appointment Type ahora es input */}
           <div>
             <label>Appointment Type</label>
             <br />
-            <select
+            <input
               name="appointment_type"
               value={formData.appointment_type}
               onChange={handleChange}
+              placeholder="e.g. Ultrasound, OB Visit, Lab, Class..."
               style={{ width: "100%" }}
-            >
-              <option value="">Select...</option>
-              {TYPE_OPTIONS.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
@@ -248,3 +242,4 @@ export default function AppointmentEdit() {
     </div>
   );
 }
+
