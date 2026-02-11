@@ -1,25 +1,18 @@
-import { useState, useContext } from 'react';
-import { useNavigate } from "react-router-dom"
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { signUp } from "../../services/authService";
+import { UserContext } from "../../contexts/UserContext";
 
-import { signUp } from '../../services/authService';
-
-import { UserContext } from '../../contexts/UserContext';
-
-const SignUpForm = () => {
+export default function SignUpForm() {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
-  const [message, setMessage] = useState('');
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    passwordConf: '',
-  });
 
-  const { username, password, passwordConf } = formData;
+  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({ username: "", password: "" });
 
   const handleChange = (evt) => {
-    setMessage('');
+    setMessage("");
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
   };
 
@@ -28,61 +21,61 @@ const SignUpForm = () => {
     try {
       const newUser = await signUp(formData);
       setUser(newUser);
-      navigate('/');
+      navigate("/");
     } catch (err) {
       setMessage(err.message);
     }
   };
 
-  const isFormInvalid = () => {
-    return !(username && password && password === passwordConf);
-  };
-
   return (
-    <main>
-      <h1>Sign Up</h1>
-      <p>{message}</p>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='username'>Username:</label>
-          <input
-            type='text'
-            id='name'
-            value={username}
-            name='username'
-            onChange={handleChange}
-            required
-          />
+    <main className="container">
+      <section className="card soft">
+        <div className="brand" style={{ marginBottom: 12 }}>
+          <div className="brand-mark">🤰</div>
+          <div>
+            <div className="brand-title">Pregnancy Planner</div>
+            <div className="brand-subtitle">Create your account</div>
+          </div>
         </div>
-        <div>
-          <label htmlFor='password'>Password:</label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            name='password'
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor='confirm'>Confirm Password:</label>
-          <input
-            type='password'
-            id='confirm'
-            value={passwordConf}
-            name='passwordConf'
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <button disabled={isFormInvalid()}>Sign Up</button>
-          <button onClick={() => navigate('/')}>Cancel</button>
-        </div>
-      </form>
+
+        <h2 style={{ marginBottom: 6 }}>Sign Up</h2>
+        {message ? <div className="alert error">{message}</div> : null}
+
+        <form autoComplete="off" className="form-grid" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              autoComplete="off"
+              id="username"
+              value={formData.username}
+              name="username"
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              autoComplete="off"
+              id="password"
+              value={formData.password}
+              name="password"
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="actions-row">
+            <button className="primary">Create Account</button>
+            <button type="button" onClick={() => navigate("/")}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
     </main>
   );
-};
-
-export default SignUpForm;
+}

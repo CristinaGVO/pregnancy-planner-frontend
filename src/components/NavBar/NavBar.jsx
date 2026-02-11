@@ -1,34 +1,45 @@
-import { useContext } from 'react';
-import { Link } from "react-router-dom"
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../../contexts/UserContext";
 
-
-import { UserContext } from '../../contexts/UserContext';
-
-const NavBar = () => {
+export default function NavBar() {
   const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSignOut = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
+    navigate("/");
   };
 
   return (
-    <nav>
-      {user ? (
-        <ul>
-          <li>Welcome, {user.username}</li>
-          <li><Link to='/'>Dashboard</Link></li>
-          <li><Link to='/' onClick={handleSignOut}>Sign Out</Link></li>
-        </ul>
-      ) : (
-        <ul>
-          <li><Link to='/'>Home</Link></li>
-          <li><Link to='/sign-in'>Sign In</Link></li>
-          <li><Link to='/sign-up'>Sign Up</Link></li>
-        </ul>
-      )}
-    </nav>
-  );
-};
+    <header className="navbar">
+      <div className="navbar-inner">
+        <Link to="/" className="brand">
+          <div className="brand-mark">🤰</div>
+          <div>
+            <div className="brand-title">Pregnancy Planner</div>
+            <div className="brand-subtitle">Simple & private</div>
+          </div>
+        </Link>
 
-export default NavBar;
+        <nav className="nav-links">
+          {!user ? (
+            <>
+              <Link className="chip" to="/sign-in">Sign In</Link>
+              <Link className="chip active" to="/sign-up">Sign Up</Link>
+            </>
+          ) : (
+            <>
+              <span className="badge mint">{user.username}</span>
+              <button type="button" onClick={handleSignOut}>
+                Sign Out
+              </button>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
+

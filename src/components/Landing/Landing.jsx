@@ -1,38 +1,40 @@
 import { Link } from "react-router-dom";
 
-const Landing = () => {
+export default function Landing() {
   return (
-    <main className="landing">
-      <section className="landing__container">
-        <header className="landing__header">
-          <h1 className="landing__title">Pregnancy Planner</h1>
-          <p className="landing__subtitle">
-            A simple way to organize prenatal appointments and notes.
-          </p>
-        </header>
+    <main className="container">
+      <section className="card soft">
+        <div className="brand" style={{ marginBottom: 12 }}>
+          <div className="brand-mark">🤰</div>
+          <div>
+            <div className="brand-title">Pregnancy Planner</div>
+            <div className="brand-subtitle">Appointments • Notes • Timeline</div>
+          </div>
+        </div>
 
-        <div className="landing__actions">
-          <Link className="btn btn--primary" to="/sign-up">
-            Create account
+        <h2 style={{ marginBottom: 6 }}>A calm space for your prenatal journey ✨</h2>
+        <p className="muted" style={{ marginBottom: 14 }}>
+          Track appointments, keep notes, and see your weeks left — all in one place.
+        </p>
+
+        <div className="actions-row" style={{ marginTop: 10 }}>
+          <Link to="/sign-in">
+            <button type="button" className="primary">Sign In</button>
           </Link>
-          <Link className="btn btn--secondary" to="/sign-in">
-            Sign in
+          <Link to="/sign-up">
+            <button type="button">Create account</button>
           </Link>
         </div>
 
-        <ul className="landing__list">
-          <li>Track appointments (doctor, type, status, notes)</li>
-          <li>See your next scheduled appointment</li>
-          <li>Filter appointments: upcoming / past / all</li>
-        </ul>
-
-        <p className="landing__footnote">
-          Already have an account? <Link to="/sign-in">Sign in</Link>
-        </p>
+        <div className="filters" style={{ marginTop: 16 }}>
+          <div className="meta">
+            <span>Private</span>
+            <span>Simple</span>
+            <span>Fast</span>
+            <span>For every parent</span>
+          </div>
+        </div>
       </section>
     </main>
   );
-};
-
-export default Landing;
-
+}
