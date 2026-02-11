@@ -2,13 +2,17 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../contexts/UserContext";
-import { getAppointments,createAppointment,deleteAppointment} from "../../services/appointmentsService";
+import {
+  getAppointments,
+  createAppointment,
+  deleteAppointment,
+} from "../../services/appointmentsService";
 
 const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function parseDateTime(dt) {
   if (!dt) return null;
-  const s = String(dt).replace(" ", "T");
+  const s = String(dt).replace(" ", "T"); // "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
   const d = new Date(s);
   return Number.isNaN(d.getTime()) ? null : d;
 }
@@ -25,7 +29,7 @@ export default function Dashboard() {
 
   const [appointments, setAppointments] = useState([]);
   const [message, setMessage] = useState("");
-  const [filter, setFilter] = useState("upcoming"); // "all" | "upcoming" | "past"
+  const [filter, setFilter] = useState("upcoming"); 
   const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -44,8 +48,8 @@ export default function Dashboard() {
       const token = localStorage.getItem("token");
       const data = await getAppointments(token);
       setAppointments(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setMessage("Error loading appointments");
+    } catch (error) {
+      setMessage(error?.message || "Error loading appointments");
     } finally {
       setLoading(false);
     }
@@ -81,7 +85,7 @@ export default function Dashboard() {
     });
   }, [sortedAppointments, filter]);
 
-  // ✅ Extra #1: Next appointment (future + scheduled)
+  // Next appointment (future + scheduled)
   const nextAppointment = useMemo(() => {
     const now = new Date();
     return sortedAppointments.find((a) => {
@@ -118,7 +122,10 @@ export default function Dashboard() {
       };
 
       const created = await createAppointment(token, payload);
-      if (created.error) throw new Error(created.error);
+
+      if (created?.error) {
+        throw new Error(created.error);
+      }
 
       await refreshAppointments();
 
@@ -134,8 +141,8 @@ export default function Dashboard() {
       });
 
       setMessage("Appointment created ✅");
-    } catch (err) {
-      setMessage(err.message);
+    } catch (error) {
+      setMessage(error?.message || "Something went wrong");
     }
   };
 
@@ -146,12 +153,15 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const deleted = await deleteAppointment(token, id);
-      if (deleted.error) throw new Error(deleted.error);
+
+      if (deleted?.error) {
+        throw new Error(deleted.error);
+      }
 
       await refreshAppointments();
       setMessage("Appointment deleted ✅");
-    } catch (err) {
-      setMessage(err.message);
+    } catch (error) {
+      setMessage(error?.message || "Something went wrong");
     }
   };
 
@@ -161,7 +171,7 @@ export default function Dashboard() {
 
       {message && <p>{message}</p>}
 
-      {/* ✅ Extra #1 */}
+      {/* Next Appointment */}
       <div
         style={{
           border: "1px solid #ddd",
@@ -179,7 +189,7 @@ export default function Dashboard() {
             <div style={{ fontWeight: 700 }}>{nextAppointment.title}</div>
             <div>{formatShort(nextAppointment.date_time)}</div>
             {nextAppointment.doctor_name && (
-              <div>Doctor: {nextAppointment.doctor_name}</div>
+              <div>Provider: {nextAppointment.doctor_name}</div>
             )}
             {nextAppointment.appointment_type && (
               <div>Type: {nextAppointment.appointment_type}</div>
@@ -202,7 +212,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Create */}
+      {/* Create Appointment */}
       <div
         style={{
           border: "1px solid #ddd",
@@ -226,13 +236,7 @@ export default function Dashboard() {
             />
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
               <label>Date</label>
               <br />
@@ -260,15 +264,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
-              <label>Doctor Name</label>
+              <label>Provider Name</label>
               <br />
               <input
                 name="doctor_name"
@@ -278,7 +276,6 @@ export default function Dashboard() {
               />
             </div>
 
-            {/* ✅ Appointment Type ahora es input */}
             <div>
               <label>Appointment Type</label>
               <br />
@@ -292,13 +289,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
               <label>Status</label>
               <br />
@@ -346,10 +337,8 @@ export default function Dashboard() {
         </form>
       </div>
 
-      {/* ✅ Extra #2 */}
-      <div
-        style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}
-      >
+      {/* Filter */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
         <strong>Filter:</strong>
         <button type="button" onClick={() => setFilter("all")}>
           All
@@ -384,9 +373,8 @@ export default function Dashboard() {
               <div>
                 <div style={{ fontWeight: 700 }}>{a.title}</div>
                 <div>{formatShort(a.date_time)}</div>
-                {a.doctor_name && <div>Doctor: {a.doctor_name}</div>}
+                {a.doctor_name && <div>Provider: {a.doctor_name}</div>}
                 {a.appointment_type && <div>Type: {a.appointment_type}</div>}
-                {/* ✅ Extra #3 */}
                 <div>Status: {a.status ?? "scheduled"}</div>
                 {a.location && <div>Location: {a.location}</div>}
                 {a.notes && <div>Notes: {a.notes}</div>}
@@ -410,3 +398,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
