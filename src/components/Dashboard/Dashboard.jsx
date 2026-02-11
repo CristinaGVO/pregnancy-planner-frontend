@@ -8,6 +8,12 @@ import {
   deleteAppointment,
 } from "../../services/appointmentsService";
 
+import {
+  getProfile,
+  createProfile,
+  updateProfile,
+} from "../../services/pregnancyProfileService";
+
 const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function parseDateTime(dt) {
@@ -29,9 +35,17 @@ export default function Dashboard() {
 
   const [appointments, setAppointments] = useState([]);
   const [message, setMessage] = useState("");
-  const [filter, setFilter] = useState("upcoming"); 
+  const [filter, setFilter] = useState("upcoming"); // "all" | "upcoming" | "past"
   const [loading, setLoading] = useState(true);
 
+  // Pregnancy profile
+  const [profile, setProfile] = useState(null);
+  const [profileForm, setProfileForm] = useState({
+    due_date: "",
+    baby_nickname: "",
+  });
+
+  // Create appointment form
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -43,13 +57,26 @@ export default function Dashboard() {
     notes: "",
   });
 
-  async function refreshAppointments() {
+  async function refreshData() {
     try {
       const token = localStorage.getItem("token");
-      const data = await getAppointments(token);
-      setAppointments(Array.isArray(data) ? data : []);
+
+      // load appointments
+      const apptData = await getAppointments(token);
+      setAppointments(Array.isArray(apptData) ? apptData : []);
+
+      // load pregnancy profile
+      const prof = await getProfile(token);
+      setProfile(prof);
+
+      if (prof) {
+        setProfileForm({
+          due_date: prof.due_date || "",
+          baby_nickname: prof.baby_nickname || "",
+        });
+      }
     } catch (error) {
-      setMessage(error?.message || "Error loading appointments");
+      setMessage(error?.message || "Error loading data");
     } finally {
       setLoading(false);
     }
@@ -60,9 +87,22 @@ export default function Dashboard() {
       navigate("/sign-in");
       return;
     }
-    refreshAppointments();
+    refreshData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
+
+  const weeksLeft = useMemo(() => {
+    if (!profile?.due_date) return null;
+
+    const today = new Date();
+    const due = new Date(profile.due_date + "T00:00:00");
+
+    const diffMs = due - today;
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const w = Math.max(0, Math.ceil(diffDays / 7));
+
+    return w;
+  }, [profile]);
 
   const sortedAppointments = useMemo(() => {
     const copy = [...appointments];
@@ -127,7 +167,7 @@ export default function Dashboard() {
         throw new Error(created.error);
       }
 
-      await refreshAppointments();
+      await refreshData();
 
       setFormData({
         title: "",
@@ -158,10 +198,35 @@ export default function Dashboard() {
         throw new Error(deleted.error);
       }
 
-      await refreshAppointments();
+      await refreshData();
       setMessage("Appointment deleted ✅");
     } catch (error) {
       setMessage(error?.message || "Something went wrong");
+    }
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!profileForm.due_date) {
+        throw new Error("Please select a due date");
+      }
+
+      // If profile exists -> PUT, else -> POST
+      const result = profile
+        ? await updateProfile(token, profileForm)
+        : await createProfile(token, profileForm);
+
+      if (result?.error) throw new Error(result.error);
+
+      setProfile(result);
+      setMessage(profile ? "Profile updated ✅" : "Profile saved ✅");
+    } catch (error) {
+      setMessage(error?.message || "Error saving profile");
     }
   };
 
@@ -170,6 +235,127 @@ export default function Dashboard() {
       <h2>Dashboard</h2>
 
       {message && <p>{message}</p>}
+
+      {/* Pregnancy Profile */}
+      <div
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: 10,
+          padding: 16,
+          marginBottom: 16,
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>Pregnancy</h3>
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : profile ? (
+          <>
+            <p style={{ margin: "6px 0" }}>
+              <b>{weeksLeft}</b> weeks left until your due date ({profile.due_date})
+              {profile.baby_nickname ? ` • Nickname: ${profile.baby_nickname}` : ""}
+            </p>
+
+            <form
+              onSubmit={handleProfileSubmit}
+              style={{ display: "grid", gap: 10, marginTop: 10 }}
+            >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                }}
+              >
+                <div>
+                  <label>Due Date</label>
+                  <br />
+                  <input
+                    type="date"
+                    value={profileForm.due_date}
+                    onChange={(e) =>
+                      setProfileForm((p) => ({ ...p, due_date: e.target.value }))
+                    }
+                    required
+                    style={{ width: "100%" }}
+                  />
+                </div>
+
+                <div>
+                  <label>Baby Nickname (optional)</label>
+                  <br />
+                  <input
+                    value={profileForm.baby_nickname}
+                    onChange={(e) =>
+                      setProfileForm((p) => ({
+                        ...p,
+                        baby_nickname: e.target.value,
+                      }))
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button type="submit">Save Profile</button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <p style={{ margin: "6px 0" }}>
+              Add your due date to see how many weeks are left.
+            </p>
+
+            <form
+              onSubmit={handleProfileSubmit}
+              style={{ display: "grid", gap: 10, marginTop: 10 }}
+            >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                }}
+              >
+                <div>
+                  <label>Due Date</label>
+                  <br />
+                  <input
+                    type="date"
+                    value={profileForm.due_date}
+                    onChange={(e) =>
+                      setProfileForm((p) => ({ ...p, due_date: e.target.value }))
+                    }
+                    required
+                    style={{ width: "100%" }}
+                  />
+                </div>
+
+                <div>
+                  <label>Baby Nickname (optional)</label>
+                  <br />
+                  <input
+                    value={profileForm.baby_nickname}
+                    onChange={(e) =>
+                      setProfileForm((p) => ({
+                        ...p,
+                        baby_nickname: e.target.value,
+                      }))
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button type="submit">Save</button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
 
       {/* Next Appointment */}
       <div
@@ -236,7 +422,13 @@ export default function Dashboard() {
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Date</label>
               <br />
@@ -264,7 +456,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Provider Name</label>
               <br />
@@ -289,7 +487,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
+            }}
+          >
             <div>
               <label>Status</label>
               <br />
@@ -338,7 +542,14 @@ export default function Dashboard() {
       </div>
 
       {/* Filter */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
         <strong>Filter:</strong>
         <button type="button" onClick={() => setFilter("all")}>
           All
@@ -369,7 +580,13 @@ export default function Dashboard() {
               borderRadius: 10,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
               <div>
                 <div style={{ fontWeight: 700 }}>{a.title}</div>
                 <div>{formatShort(a.date_time)}</div>
@@ -398,4 +615,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
 
