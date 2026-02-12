@@ -6,16 +6,14 @@ export default function Landing() {
       <section className="card soft">
         <div className="brand" style={{ marginBottom: 12 }}>
           <div className="brand-mark">🤰</div>
-          <div>
-            <div className="brand-title">Pregnancy Planner</div>
-            <div className="brand-subtitle">Appointments • Notes • Timeline</div>
-          </div>
-        </div>
-
-        <h2 style={{ marginBottom: 6 }}>A calm space for your prenatal journey ✨</h2>
-        <p className="muted" style={{ marginBottom: 14 }}>
+          <p className="muted" style={{ marginBottom: 14 }}>
           Track appointments, keep notes, and see your weeks left — all in one place.
         </p>
+          
+
+        </div>
+
+        
 
         <div className="actions-row" style={{ marginTop: 10 }}>
           <Link to="/sign-in">

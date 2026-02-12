@@ -1,5 +1,5 @@
 /* ----------------------------
-   Pregnancy Planner Theme (Warm + Cute)
+   Pregnancy Planner Theme (Warm + Stronger)
    Use ONLY index.css for now
 ----------------------------- */
 
@@ -9,56 +9,50 @@
     "Apple Color Emoji", "Segoe UI Emoji";
 
   /* Base colors */
-  --bg: #fff7fb;            /* warmer, pregnancy vibe */
+  --bg: #fff1f7;            /* a bit stronger */
   --surface: #ffffff;
   --text: #1f2937;
   --muted: #6b7280;
-  --border: #e7edf5;
+  --border: #e5eaf3;
 
-  /* Pastel accents */
-  --pink: #f3b3c8;
-  --peach: #f6c7a6;
-  --mint: #aee7d8;
-  --sky: #a9d6ff;
+  /* Stronger pastel accents (más vivos) */
+  --pink: #f08ab2;
+  --peach: #ffb07c;
+  --mint: #6fd9c4;
+  --sky: #7bbcff;
+
+  /* NEW: purple accent for app name */
+  --purple: #a70699;
 
   /* UI tokens */
-  --radius: 14px;
-  --shadow-soft: 0 8px 22px rgba(17, 24, 39, 0.06);
-  --ring: rgba(133, 192, 255, 0.45);
+  --radius: 16px;
+  --shadow-soft: 0 10px 26px rgba(17, 24, 39, 0.08);
+  --ring: rgba(123, 188, 255, 0.50);
 
   --danger: #f87171;
   --success: #34d399;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
   color: var(--text);
 
-  /* Warm + colorful pregnancy pastel background */
+  /* Background stronger */
   background:
-    radial-gradient(900px 520px at 8% 8%, rgba(169, 214, 255, 0.40), transparent 60%),
-    radial-gradient(850px 520px at 95% 10%, rgba(246, 199, 166, 0.36), transparent 62%),
-    radial-gradient(900px 520px at 12% 96%, rgba(174, 231, 216, 0.32), transparent 60%),
-    radial-gradient(820px 520px at 92% 92%, rgba(243, 179, 200, 0.30), transparent 62%),
-    radial-gradient(700px 420px at 50% 50%, rgba(255, 255, 255, 0.75), transparent 70%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.35)),
+    radial-gradient(980px 560px at 8% 8%, rgba(123, 188, 255, 0.58), transparent 60%),
+    radial-gradient(930px 560px at 95% 10%, rgba(255, 176, 124, 0.52), transparent 62%),
+    radial-gradient(980px 560px at 12% 96%, rgba(111, 217, 196, 0.50), transparent 60%),
+    radial-gradient(900px 560px at 92% 92%, rgba(240, 138, 178, 0.46), transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.28)),
     var(--bg);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
 p {
   margin: 0.5rem 0;
@@ -75,10 +69,11 @@ h1 { font-size: 2rem; }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.1rem; }
 
+/* Bigger container */
 .container {
-  max-width: 920px;
-  margin: 28px auto;
-  padding: 0 16px;
+  max-width: 1040px;  /* ✅ bigger */
+  margin: 34px auto;
+  padding: 0 18px;
 }
 
 /* ----------------------------
@@ -89,14 +84,14 @@ h3 { font-size: 1.1rem; }
   top: 0;
   z-index: 5;
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.70);
+  background: rgba(255, 255, 255, 0.72);
   border-bottom: 1px solid var(--border);
 }
 
 .navbar-inner {
-  max-width: 920px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -110,85 +105,103 @@ h3 { font-size: 1.1rem; }
 }
 
 /* ----------------------------
-   Brand / Logo (simple)
+   Brand / Logo (simple + SVG ready)
 ----------------------------- */
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .brand-mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   border: 1px solid var(--border);
   background: linear-gradient(
     135deg,
-    rgba(243, 179, 200, 0.28),
-    rgba(246, 199, 166, 0.28),
-    rgba(174, 231, 216, 0.22),
-    rgba(169, 214, 255, 0.22)
+    rgba(240, 138, 178, 0.30),
+    rgba(255, 176, 124, 0.28),
+    rgba(111, 217, 196, 0.24),
+    rgba(123, 188, 255, 0.22)
   );
   display: grid;
   place-items: center;
   box-shadow: var(--shadow-soft);
-  font-size: 18px;
+}
+
+.brand-mark svg {
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 
 .brand-title {
   font-weight: 900;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: var(--purple); /* ✅ morado */
   line-height: 1.1;
 }
 
 .brand-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--muted);
   margin-top: 2px;
 }
 
 /* ----------------------------
-   Cards
+   Cards (bigger + same height option)
 ----------------------------- */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
-  padding: 16px;
+  padding: 22px;   /* ✅ bigger */
 }
 
-.card.soft {
-  background: rgba(255, 255, 255, 0.82);
-}
+.card.soft { background: rgba(255, 255, 255, 0.86); }
 
-.card + .card {
-  margin-top: 14px;
-}
+.card + .card { margin-top: 16px; }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
-.section-header h3 {
-  margin: 0;
-}
+.section-header h3 { margin: 0; }
 
 .section-header h3::after {
   content: " ✿";
-  color: rgba(243, 179, 200, 0.95);
+  color: rgba(240, 138, 178, 0.95);
   font-weight: 900;
 }
 
 .muted { color: var(--muted); }
 .strong { font-weight: 800; }
-.lead { color: var(--text); margin: 6px 0; }
+.lead { color: var(--text); margin: 8px 0; }
+
+/* Dashboard grid helpers */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 820px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Make cards equal height in a grid */
+.dash-card {
+  min-height: 260px;  /* ✅ equal-ish height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
 /* ----------------------------
    Hero (Dashboard header)
@@ -196,55 +209,24 @@ h3 { font-size: 1.1rem; }
 .hero {
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 20px; /* ✅ bigger */
   background: linear-gradient(
     135deg,
-    rgba(243, 179, 200, 0.18),
-    rgba(246, 199, 166, 0.20),
-    rgba(174, 231, 216, 0.16),
-    rgba(169, 214, 255, 0.16)
+    rgba(240, 138, 178, 0.22),
+    rgba(255, 176, 124, 0.22),
+    rgba(111, 217, 196, 0.18),
+    rgba(123, 188, 255, 0.18)
   );
   box-shadow: var(--shadow-soft);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .hero-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; /* nicer */
   gap: 12px;
-}
-
-.hero-title {
-  font-size: 1.25rem;
-  margin: 0;
-}
-
-.hero-sub {
-  margin-top: 6px;
-  color: var(--muted);
-}
-
-.hero-metric {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-
-.hero-metric .big {
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-}
-
-.hero-metric .small {
-  color: var(--muted);
-  font-weight: 800;
+  flex-wrap: wrap;
 }
 
 /* ----------------------------
@@ -254,22 +236,22 @@ h3 { font-size: 1.1rem; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.78);
   color: var(--text);
   font-weight: 800;
 }
 
-.badge.pink { background: rgba(243, 179, 200, 0.18); }
-.badge.peach { background: rgba(246, 199, 166, 0.20); }
-.badge.mint { background: rgba(174, 231, 216, 0.22); }
-.badge.sky { background: rgba(169, 214, 255, 0.22); }
+.badge.pink { background: rgba(240, 138, 178, 0.22); }
+.badge.peach { background: rgba(255, 176, 124, 0.22); }
+.badge.mint { background: rgba(111, 217, 196, 0.22); }
+.badge.sky { background: rgba(123, 188, 255, 0.22); }
 
 /* ----------------------------
-   Buttons
+   Buttons (all equal like New Appointment)
 ----------------------------- */
 button {
   appearance: none;
@@ -277,7 +259,7 @@ button {
   background: white;
   color: var(--text);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   cursor: pointer;
   font-weight: 800;
   transition: transform 120ms ease, box-shadow 120ms ease,
@@ -288,32 +270,46 @@ button {
 button:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
-  border-color: rgba(243, 179, 200, 0.55);
+  border-color: rgba(240, 138, 178, 0.55);
 }
 
 button:active { transform: translateY(0); }
 
+/* Primary style */
 button.primary {
-  border: 1px solid rgba(243, 179, 200, 0.35);
+  border: 1px solid rgba(240, 138, 178, 0.40);
   background: linear-gradient(
     135deg,
-    rgba(243, 179, 200, 0.40),
-    rgba(246, 199, 166, 0.35),
-    rgba(169, 214, 255, 0.30)
+    rgba(240, 138, 178, 0.46),
+    rgba(255, 176, 124, 0.38),
+    rgba(123, 188, 255, 0.32)
   );
+}
+
+/* Make all dashboard action buttons same size */
+.btn-equal {
+  min-width: 210px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
 }
 
 button.danger {
   border-color: rgba(248, 113, 113, 0.35);
-  background: rgba(248, 113, 113, 0.10);
+  background: rgba(248, 113, 113, 0.12);
 }
+
+/* Actions rows */
+.actions-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.actions-col { display: flex; flex-direction: column; gap: 10px; }
+.actions-col button { width: 100%; }
 
 /* ----------------------------
    Inputs
 ----------------------------- */
-input,
-textarea,
-select {
+input, textarea, select {
   width: 100%;
   font-family: inherit;
   border: 1px solid var(--border);
@@ -325,15 +321,10 @@ select {
   transition: box-shadow 120ms ease, border-color 120ms ease;
 }
 
-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
+textarea { min-height: 90px; resize: vertical; }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: rgba(169, 214, 255, 0.95);
+input:focus, textarea:focus, select:focus {
+  border-color: rgba(123, 188, 255, 0.95);
   box-shadow: 0 0 0 4px var(--ring);
 }
 
@@ -348,25 +339,10 @@ label {
 /* Forms */
 .form-grid { display: grid; gap: 12px; }
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-@media (max-width: 720px) {
-  .grid-2 { grid-template-columns: 1fr; }
-}
-
-/* Actions rows */
-.actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.actions-col { display: flex; flex-direction: column; gap: 8px; }
-.actions-col button { width: 100%; }
-
 /* Alerts */
 .alert {
   border: 1px solid var(--border);
-  background: rgba(169, 214, 255, 0.16);
+  background: rgba(123, 188, 255, 0.18);
   padding: 10px 12px;
   border-radius: 12px;
   color: var(--text);
@@ -374,56 +350,23 @@ label {
   font-weight: 700;
 }
 
-.alert.success { background: rgba(52, 211, 153, 0.12); }
-.alert.error { background: rgba(248, 113, 113, 0.12); }
-
-/* Filters chips */
-.filters { margin: 12px 0 14px; }
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.chip {
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.75);
-  font-weight: 800;
-}
-
-.chip.active {
-  border-color: rgba(243, 179, 200, 0.55);
-  background: rgba(243, 179, 200, 0.16);
-}
-
-/* Next appointment block */
-.next-appt {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
+.alert.success { background: rgba(52, 211, 153, 0.14); }
+.alert.error { background: rgba(248, 113, 113, 0.14); }
 
 /* List */
-.list { display: grid; gap: 10px; }
+.list { display: grid; gap: 12px; }
 
 .list-item {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.86);
 }
 
-.list-item:hover {
-  border-color: rgba(243, 179, 200, 0.45);
-}
+.list-item:hover { border-color: rgba(240, 138, 178, 0.50); }
 
 .list-item-main { flex: 1; }
 
@@ -437,7 +380,7 @@ label {
 }
 
 .meta span {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--border);
   padding: 6px 10px;
   border-radius: 999px;
@@ -446,7 +389,7 @@ label {
 .notes {
   margin-top: 10px;
   color: var(--text);
-  background: rgba(169, 214, 255, 0.12);
+  background: rgba(123, 188, 255, 0.14);
   border: 1px solid var(--border);
   padding: 10px 12px;
   border-radius: 12px;
@@ -462,15 +405,15 @@ label {
   text-transform: lowercase;
 }
 
-.pill.scheduled { background: rgba(169, 214, 255, 0.20); }
-.pill.completed { background: rgba(174, 231, 216, 0.22); }
-.pill.canceled  { background: rgba(243, 179, 200, 0.20); }
+.pill.scheduled { background: rgba(123, 188, 255, 0.22); }
+.pill.completed { background: rgba(111, 217, 196, 0.22); }
+.pill.canceled  { background: rgba(240, 138, 178, 0.22); }
 
-/* Create form collapsible panel */
+/* Create form panel (if you still use it somewhere) */
 .form-panel {
   margin-top: 12px;
   padding: 14px;
-  border: 1px dashed rgba(243, 179, 200, 0.55);
+  border: 1px dashed rgba(240, 138, 178, 0.60);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.78);
 }

@@ -19,7 +19,7 @@ export default function NavBar() {
           <div className="brand-mark">🤰</div>
           <div>
             <div className="brand-title">Pregnancy Planner</div>
-            <div className="brand-subtitle">Simple & private</div>
+            <div className="brand-subtitle">A calm space for your prenatal journey</div>
           </div>
         </Link>
 

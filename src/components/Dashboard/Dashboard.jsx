@@ -49,12 +49,13 @@ export default function Dashboard() {
 
   const [appointments, setAppointments] = useState([]);
   const [profile, setProfile] = useState(null);
-  const [profileForm, setProfileForm] = useState({ due_date: "", baby_nickname: "" });
+  const [profileForm, setProfileForm] = useState({
+    due_date: "",
+    baby_nickname: "",
+  });
 
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ kind: "", text: "" });
-
-  // minimal UI: hide profile form unless needed
   const [showProfileForm, setShowProfileForm] = useState(false);
 
   const showAlert = (kind, text) => setAlert({ kind, text });
@@ -71,6 +72,8 @@ export default function Dashboard() {
       setAppointments(Array.isArray(apptData) ? apptData : []);
 
       const prof = await getProfile(token);
+
+      // Si el backend devuelve 404 con {error}, lo tratamos como "sin perfil"
       if (!prof || isErrorPayload(prof)) {
         setProfile(null);
         setProfileForm({ due_date: "", baby_nickname: "" });
@@ -168,79 +171,95 @@ export default function Dashboard() {
       });
 
       setShowProfileForm(false);
-      showAlert("success", "Saved ✅");
+      showAlert("success", "Saved");
     } catch (err) {
       showAlert("error", err?.message || "Error saving profile");
     }
   };
 
+  // Provider name (tu nuevo campo) con fallback por si hay data vieja
+  const nextProvider =
+    nextAppointment?.provider_name ?? nextAppointment?.doctor_name ?? "";
+
   return (
     <main className="container">
-      {/* TOP BAR (minimal) */}
-      <div className="hero" style={{ padding: 14 }}>
-        <div className="hero-row" style={{ alignItems: "center" }}>
+      {/* HERO */}
+      <header className="hero hero-lg">
+        <div className="hero-row hero-row-center">
           <div className="brand">
-            <div className="brand-mark">🤰</div>
+            <div className="brand-mark" aria-hidden="true">
+              {/* Simple, clean, “app-like” logo */}
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 21s-7-4.4-9.4-9C.5 7.7 3.1 4.5 6.5 4.5c1.9 0 3.3 1 4.1 2 0.8-1 2.2-2 4.1-2 3.4 0 6 3.2 3.9 7.5C19 16.6 12 21 12 21Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9.2 10.5c1.6-1.2 3.9-1.2 5.6 0"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+
             <div>
-              <div className="brand-title">Pregnancy Planner</div>
+              <div className="brand-title brand-title-purple">
+                Pregnancy Planner
+              </div>
               <div className="brand-subtitle">{user?.username}</div>
             </div>
           </div>
 
-          <div className="actions-row">
-            <button
-              className="primary"
-              type="button"
-              onClick={() => navigate("/appointments/new")}
-            >
-              + New
-            </button>
-            <button type="button" onClick={() => navigate("/appointments")}>
-              List
-            </button>
-          </div>
+          {/* (Opcional) aquí podrías poner un botón de “Settings” en el futuro */}
+          <div className="actions-row buttons-equal"></div>
         </div>
-      </div>
+      </header>
 
       {alert.text ? <div className={`alert ${alert.kind}`}>{alert.text}</div> : null}
 
-      {/* GRID: 3 clean cards */}
-      <section className="grid-2" style={{ marginTop: 14 }}>
-        {/* Weeks Left */}
-        <div className="card soft">
-          <div className="section-header" style={{ marginBottom: 8 }}>
-            <h3>Timeline</h3>
-            <span className="badge mint">Due</span>
+      {/* 2 cards arriba */}
+      <section className="grid-2 dashboard-grid">
+        {/* DUE DATE */}
+        <div className="card soft card-lg">
+          <div className="section-header section-header-lg">
+            <h3>Due date</h3>
+            <span className="badge">Timeline</span>
           </div>
 
           {loading ? (
             <p className="muted">Loading...</p>
           ) : weeksLeft === null ? (
             <>
-              <p className="muted" style={{ marginBottom: 10 }}>
-                Add due date
-              </p>
-              <button type="button" onClick={() => setShowProfileForm(true)}>
-                Set due date
-              </button>
+              <p className="muted">Add your due date to see your timeline.</p>
+              <div className="actions-row buttons-equal">
+                <button type="button" onClick={() => setShowProfileForm(true)}>
+                  Set due date
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <div style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
-                <span style={{ fontSize: 34, fontWeight: 900, letterSpacing: "-0.03em" }}>
-                  {weeksLeft}
-                </span>
-                <span className="muted" style={{ fontWeight: 800 }}>
-                  weeks left
-                </span>
+              <div className="metric">
+                <span className="metric-number">{weeksLeft}</span>
+                <span className="muted strong">weeks left</span>
               </div>
 
-              <div className="muted" style={{ marginTop: 6 }}>
+              <div className="muted metric-sub">
                 {dueDateISO}
                 {profileForm.baby_nickname ? ` • ${profileForm.baby_nickname}` : ""}
               </div>
 
-              <div className="actions-row" style={{ marginTop: 10 }}>
+              <div className="actions-row buttons-equal">
                 <button type="button" onClick={() => setShowProfileForm((v) => !v)}>
                   {showProfileForm ? "Close" : "Edit"}
                 </button>
@@ -249,7 +268,7 @@ export default function Dashboard() {
           )}
 
           {showProfileForm ? (
-            <form className="form-grid" onSubmit={handleProfileSubmit} style={{ marginTop: 12 }}>
+            <form className="form-grid form-panel" onSubmit={handleProfileSubmit}>
               <div className="grid-2">
                 <div>
                   <label>Due Date</label>
@@ -275,43 +294,37 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="actions-row">
-                <button className="primary" type="submit">
-                  Save
-                </button>
+              <div className="actions-row buttons-equal">
+                <button type="submit">Save</button>
               </div>
             </form>
           ) : null}
         </div>
 
-        {/* Next Appointment */}
-        <div className="card soft">
-          <div className="section-header" style={{ marginBottom: 8 }}>
-            <h3>Next</h3>
-            <span className="badge peach">Appointment</span>
+        {/* NEXT APPOINTMENT */}
+        <div className="card soft card-lg">
+          <div className="section-header section-header-lg">
+            <h3>Next appointment</h3>
+            <span className="badge">Upcoming</span>
           </div>
 
           {loading ? (
             <p className="muted">Loading...</p>
           ) : nextAppointment ? (
             <>
-              <div className="strong" style={{ fontSize: 16 }}>
-                {nextAppointment.title}
-              </div>
-              <div className="muted" style={{ marginTop: 6 }}>
-                {formatShort(nextAppointment.date_time)}
-              </div>
+              <div className="strong appt-title">{nextAppointment.title}</div>
+              <div className="muted">{formatShort(nextAppointment.date_time)}</div>
 
-              <div style={{ marginTop: 10, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {nextAppointment.doctor_name ? (
-                  <span className="badge sky">Provider: {nextAppointment.doctor_name}</span>
+              <div className="tags-row">
+                {nextProvider ? (
+                  <span className="badge">Provider: {nextProvider}</span>
                 ) : null}
                 {nextAppointment.appointment_type ? (
-                  <span className="badge mint">{nextAppointment.appointment_type}</span>
+                  <span className="badge">{nextAppointment.appointment_type}</span>
                 ) : null}
               </div>
 
-              <div className="actions-row" style={{ marginTop: 12 }}>
+              <div className="actions-row buttons-equal">
                 <button
                   type="button"
                   onClick={() => navigate(`/appointments/${nextAppointment.id}/edit`)}
@@ -326,9 +339,12 @@ export default function Dashboard() {
           ) : (
             <>
               <p className="muted">No upcoming scheduled appointments.</p>
-              <div className="actions-row" style={{ marginTop: 10 }}>
-                <button className="primary" type="button" onClick={() => navigate("/appointments/new")}>
-                  + New
+              <div className="actions-row buttons-equal">
+                <button type="button" onClick={() => navigate("/appointments/new")}>
+                  New appointment
+                </button>
+                <button type="button" onClick={() => navigate("/appointments")}>
+                  View all
                 </button>
               </div>
             </>
@@ -336,16 +352,16 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Quick actions (optional third clean card) */}
-      <section className="card soft" style={{ marginTop: 14 }}>
-        <div className="section-header" style={{ marginBottom: 8 }}>
-          <h3>Quick</h3>
-          <span className="badge sky">Actions</span>
+      {/* QUICK ACTIONS */}
+      <section className="card soft card-lg" style={{ marginTop: 16 }}>
+        <div className="section-header section-header-lg">
+          <h3>Appointments</h3>
+          <span className="badge">Actions</span>
         </div>
 
-        <div className="actions-row">
-          <button className="primary" type="button" onClick={() => navigate("/appointments/new")}>
-            + New appointment
+        <div className="actions-row buttons-equal">
+          <button type="button" onClick={() => navigate("/appointments/new")}>
+            New appointment
           </button>
           <button type="button" onClick={() => navigate("/appointments")}>
             View appointments
