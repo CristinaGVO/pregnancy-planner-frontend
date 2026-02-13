@@ -1,7 +1,4 @@
-/* ----------------------------
-   Pregnancy Planner Theme (Warm + Cute)
-   Use ONLY index.css for now
------------------------------ */
+
 
 :root {
   /* Typography (más elegante sin instalar fuentes) */
@@ -509,4 +506,219 @@ label {
 /* Slightly nicer subtitle spacing */
 .brand-subtitle {
   margin-top: 4px;
+}
+
+/* ----------------------------
+   Landing (proportional + softer purple)
+----------------------------- */
+
+:root {
+  --brand: #7b2a68;        /* title purple */
+  --brand-soft: #8a5a7c;   /* softer purple for CTA text */
+}
+
+.landing-card {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow-soft);
+
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;            /* ✅ consistent spacing */
+  min-height: 66vh;     /* ✅ big but not too tall */
+}
+
+/* HERO */
+.landing-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.landing-hero--center {
+  justify-content: center;
+  text-align: center;
+  flex-direction: column; /* logo arriba, texto abajo */
+}
+
+.landing-logo {
+  width: 120px;
+  height: auto;
+  display: block;
+  filter: saturate(1.12) contrast(1.05);
+}
+
+.landing-headings {
+  text-align: center;
+}
+
+.landing-title {
+  margin: 0;
+  color: var(--brand);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.landing-subtitle {
+  margin: 8px 0 0 0;
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+/* FEATURES */
+.landing-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;            /* ✅ closer */
+  margin-top: 6px;
+}
+
+@media (max-width: 720px) {
+  .landing-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-feature {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.landing-featureTitle {
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 6px;
+  .landing-featureTitle {
+  color: var(--brand-soft);
+  font-weight: 900;
+  
+}
+
+  
+}
+
+.landing-featureText {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* SPACER keeps CTA lower without huge gaps */
+.landing-spacer {
+  flex: 1;
+  min-height: 8px;
+}
+
+/* CTA */
+.landing-cta {
+  text-align: center;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(
+    135deg,
+    rgba(243, 179, 200, 0.16),
+    rgba(169, 214, 255, 0.14),
+    rgba(174, 231, 216, 0.12)
+  );
+}
+
+.landing-ctaText {
+  margin: 0 0 10px 0;
+  color: var(--brand-soft);  /* ✅ softer purple */
+  font-weight: 800;
+}
+
+.landing-ctaHint {
+  margin: 10px 0 0 0;
+  color: rgba(138, 90, 124, 0.85);
+  font-weight: 700;
+}
+
+.landing-link {
+  color: var(--brand-soft);
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+/* CTA: bigger text */
+.landing-ctaText {
+  font-size: 1.05rem;     /* más grande */
+  line-height: 1.35;
+  margin: 0 0 14px 0;     /* más aire antes del botón */
+  color: var(--brand-soft);
+  font-weight: 900;
+}
+
+/* push CTA a bit further down (without huge gaps) */
+.landing-spacer {
+  flex: 1.25;             /* antes estaba 1 */
+  min-height: 18px;       /* más espacio mínimo */
+}
+
+/* Landing: feature titles same color as main title */
+.landing-featureTitle {
+  color: var(--brand);
+  font-weight: 900;
+}
+
+
+/* CTA bottom box (minimal, 2 equal buttons) */
+.landing-cta {
+  margin-top: auto;
+  padding-top: 28px;
+  text-align: center;
+}
+
+.landing-ctaText {
+  margin: 0 0 14px 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--brand); /* mismo color del título Pregnancy Planner */
+}
+
+.landing-ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Two equal buttons */
+.landing-ctaBtn {
+  min-width: 180px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 900;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.landing-ctaBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Soft colors */
+.landing-ctaBtn--primary {
+  background: rgba(123, 42, 104, 0.12);
+  border-color: rgba(123, 42, 104, 0.28);
+  color: var(--brand);
+}
+
+.landing-ctaBtn--secondary {
+  background: rgba(123, 42, 104, 0.12);
+  border-color: rgba(123, 42, 104, 0.28);
+  color: var(--brand);
 }

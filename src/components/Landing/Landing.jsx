@@ -1,39 +1,62 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import logo from "../../assets/pregnancy-planner.png";
 
-export default function Landing() {
+const Landing = () => {
   return (
     <main className="container">
-      <section className="card soft">
-        <div className="brand" style={{ marginBottom: 12 }}>
-          <div className="brand-mark">🤰</div>
-          <div>
-            <div className="brand-title">Pregnancy Planner</div>
-            <p className="muted" style={{ marginBottom: 8}}>
-          Track appointments, keep notes, and see your weeks left — all in one place.
-        </p>
+      <section className="landing-card">
+        {/* HERO */}
+        <div className="landing-hero landing-hero--center">
+          <div className="landing-headings">
+            <h1 className="landing-title">Pregnancy Planner</h1>
+            <p className="landing-subtitle">
+              A simple place to track appointments and your pregnancy timeline.
+            </p>
+          </div>
+
+          <img className="landing-logo" src={logo} alt="Pregnancy Planner logo" />
+        </div>
+
+        {/* FEATURES */}
+        <div className="landing-features">
+          <div className="landing-feature">
+            <div className="landing-featureTitle">Appointments</div>
+            <p className="landing-featureText">
+              Save visits, providers, location, notes, and status.
+            </p>
+          </div>
+
+          <div className="landing-feature">
+            <div className="landing-featureTitle">Due date</div>
+            <p className="landing-featureText">
+              See how many weeks are left until you meet your baby.
+            </p>
           </div>
         </div>
 
-       
+        {/* SPACER */}
+        <div className="landing-spacer" />
 
-        <div className="actions-row" style={{ marginTop: 10 }}>
-          <Link to="/sign-in">
-            <button type="button" className="primary">Sign In</button>
-          </Link>
-          <Link to="/sign-up">
-            <button type="button">Create account</button>
-          </Link>
-        </div>
+        {/* CTA */}
+        <div className="landing-cta">
+  <p className="landing-ctaText">
+    Ready to start?
+  </p>
 
-        <div className="filters" style={{ marginTop: 16 }}>
-          <div className="meta">
-            <span>Private</span>
-            <span>Simple</span>
-            <span>Fast</span>
-            <span>For every parent</span>
-          </div>
-        </div>
+  <div className="landing-ctaButtons">
+    <NavLink className="landing-ctaBtn landing-ctaBtn--primary" to="/sign-up">
+      Create account
+    </NavLink>
+
+    <NavLink className="landing-ctaBtn landing-ctaBtn--secondary" to="/sign-in">
+      Sign In
+    </NavLink>
+  </div>
+</div>
+
       </section>
     </main>
   );
-}
+};
+
+export default Landing;
