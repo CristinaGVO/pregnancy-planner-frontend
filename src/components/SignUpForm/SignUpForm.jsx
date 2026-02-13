@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { signUp } from "../../services/authService";
 import { UserContext } from "../../contexts/UserContext";
+import logo from "../../assets/pregnancy-planner.png";
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -31,7 +32,14 @@ export default function SignUpForm() {
     <main className="container">
       <section className="card soft">
         <div className="brand" style={{ marginBottom: 12 }}>
-          <div className="brand-mark">🤰</div>
+          <div className="brand-mark brand-mark--nav" style={{ width: 46, height: 46 }}>
+            <img
+              src={logo}
+              alt="Pregnancy Planner logo"
+              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+            />
+          </div>
+
           <div>
             <div className="brand-title">Pregnancy Planner</div>
             <div className="brand-subtitle">Create your account</div>

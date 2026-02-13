@@ -9,27 +9,47 @@ import {
   updateProfile,
 } from "../../services/pregnancyProfileService";
 
-function parseDateTime(dt) {
+// Parse LOCAL (evita que 1:00pm se vuelva 5:00am por timezone)
+function parseLocalDateTime(dt) {
   if (!dt) return null;
+  const s = String(dt);
 
-  const direct = new Date(dt);
-  if (!Number.isNaN(direct.getTime())) return direct;
+  // "YYYY-MM-DD HH:MM:SS" o "YYYY-MM-DDTHH:MM:SS"
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (m) {
+    const [, y, mo, d, hh, mm, ss] = m;
+    return new Date(
+      Number(y),
+      Number(mo) - 1,
+      Number(d),
+      Number(hh),
+      Number(mm),
+      Number(ss || 0)
+    );
+  }
 
-  const s = String(dt).replace(" ", "T");
   const fallback = new Date(s);
   return Number.isNaN(fallback.getTime()) ? null : fallback;
 }
 
-function formatDate(dt) {
-  const d = parseDateTime(dt);
+function formatDateOnly(dt) {
+  const d = parseLocalDateTime(dt);
   if (!d) return "";
-  return d.toLocaleDateString();
+  return d.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
-function formatTime(dt) {
-  const d = parseDateTime(dt);
+function formatTimeOnly(dt) {
+  const d = parseLocalDateTime(dt);
   if (!d) return "";
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function toDateInputValue(value) {
@@ -59,7 +79,6 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ kind: "", text: "" });
-
   const [showProfileForm, setShowProfileForm] = useState(false);
 
   const showAlert = (kind, text) => setAlert({ kind, text });
@@ -122,22 +141,11 @@ export default function Dashboard() {
     return Math.max(0, w);
   }, [dueDateISO]);
 
-  const weeksPhrase = useMemo(() => {
-    if (weeksLeft === null) return "";
-    const label = weeksLeft === 1 ? "semana" : "semanas";
-    return `${weeksLeft} ${label} para conocer a tu bebé`;
-  }, [weeksLeft]);
-
-  const babyTitle = useMemo(() => {
-    const name = (profileForm.baby_nickname || "").trim();
-    return name ? name : "Tu bebé";
-  }, [profileForm.baby_nickname]);
-
   const sortedAppointments = useMemo(() => {
     const copy = [...appointments];
     copy.sort((a, b) => {
-      const da = parseDateTime(a.date_time)?.getTime() ?? 0;
-      const db = parseDateTime(b.date_time)?.getTime() ?? 0;
+      const da = parseLocalDateTime(a.date_time)?.getTime() ?? 0;
+      const db = parseLocalDateTime(b.date_time)?.getTime() ?? 0;
       return da - db;
     });
     return copy;
@@ -148,7 +156,7 @@ export default function Dashboard() {
 
     const upcoming = sortedAppointments
       .map((a) => {
-        const d = parseDateTime(a.date_time);
+        const d = parseLocalDateTime(a.date_time);
         const status = String(a.status ?? "scheduled").toLowerCase().trim();
         return { a, d, status };
       })
@@ -164,7 +172,7 @@ export default function Dashboard() {
 
     try {
       const token = localStorage.getItem("token");
-      if (!profileForm.due_date) throw new Error("Selecciona una due date");
+      if (!profileForm.due_date) throw new Error("Please select a due date.");
 
       const payload = {
         due_date: profileForm.due_date,
@@ -192,64 +200,57 @@ export default function Dashboard() {
 
   return (
     <main className="container">
-      {/* HERO */}
-      <div className="hero">
-        <div className="hero-row">
-          <div>
-            <h2 style={{ margin: 0 }}>Dashboard</h2>
-            <p className="muted" style={{ margin: "6px 0 0" }}>
-              Hola {user?.username} — todo tu embarazo en un solo lugar ✨
-            </p>
-          </div>
-
-          <div className="actions-row">
-            <button className="btn" type="button" onClick={() => navigate("/appointments/new")}>
-              + New appointment
-            </button>
-            <button className="btn" type="button" onClick={() => navigate("/appointments")}>
-              View appointments
-            </button>
+      {/* Header */}
+      <div className="hero" style={{ padding: 14 }}>
+        <div className="hero-row" style={{ alignItems: "center" }}>
+          <div className="brand">
+            <div>
+              <div className="brand-title">Your Pregnancy Planner</div>
+              <div className="brand-subtitle">{user?.username}</div>
+            </div>
           </div>
         </div>
       </div>
 
       {alert.text ? <div className={`alert ${alert.kind}`}>{alert.text}</div> : null}
 
-      {/* GRID */}
-      <section className="dashboard-grid">
-        {/* DUE DATE */}
-        <div className="card soft tint-pink dashboard-card">
-          <div className="section-header">
-            <div>
-              <h3 style={{ marginBottom: 6 }}>{babyTitle}</h3>
-              <span className="badge pink">Due date</span>
-            </div>
+      {/* Two cards (same size) */}
+      <section className="grid-2 dashboard-grid" style={{ marginTop: 14 }}>
+        {/* Due date */}
+        <div className="card soft dashboard-card">
+          <div className="section-header" style={{ marginBottom: 12 }}>
+            <h3>Due date</h3>
           </div>
 
           {loading ? (
             <p className="muted">Loading...</p>
           ) : weeksLeft === null ? (
             <>
-              <p className="muted">Agrega tu due date para calcular las semanas.</p>
-              <div className="actions-row" style={{ marginTop: 12 }}>
-                <button className="btn" type="button" onClick={() => setShowProfileForm(true)}>
+              <p className="muted">Add your due date to see your timeline.</p>
+              <div className="actions-row" style={{ marginTop: 10 }}>
+                <button type="button" onClick={() => setShowProfileForm(true)}>
                   Set due date
                 </button>
               </div>
             </>
           ) : (
             <>
-              <div style={{ marginTop: 6 }}>
-                <div style={{ fontSize: 28, fontWeight: 950, letterSpacing: "-0.03em" }}>
-                  {weeksPhrase}
-                </div>
-                <p className="muted" style={{ marginTop: 8 }}>
-                  Fecha probable: <span className="strong">{dueDateISO}</span>
-                </p>
+              <div style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-0.03em" }}>
+                  {weeksLeft}
+                </span>
+                <span className="muted dashboard-smallText" style={{ fontWeight: 800 }}>
+                  weeks left for meet with your Baby
+                </span>
               </div>
 
-              <div className="actions-row" style={{ marginTop: 14 }}>
-                <button className="btn" type="button" onClick={() => setShowProfileForm((v) => !v)}>
+              <div className="muted dashboard-smallText" style={{ marginTop: 8 }}>
+                Due: <span className="strong">{dueDateISO}</span>
+                {profileForm.baby_nickname ? ` • ${profileForm.baby_nickname}` : ""}
+              </div>
+
+              <div className="actions-row" style={{ marginTop: 12 }}>
+                <button type="button" onClick={() => setShowProfileForm((v) => !v)}>
                   {showProfileForm ? "Close" : "Edit"}
                 </button>
               </div>
@@ -257,10 +258,10 @@ export default function Dashboard() {
           )}
 
           {showProfileForm ? (
-            <form className="form-grid" onSubmit={handleProfileSubmit} style={{ marginTop: 14 }}>
+            <form className="form-grid" onSubmit={handleProfileSubmit} style={{ marginTop: 12 }}>
               <div className="grid-2">
                 <div>
-                  <label>Due Date</label>
+                  <label>Due date</label>
                   <input
                     type="date"
                     value={profileForm.due_date}
@@ -272,7 +273,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label>Baby Nickname</label>
+                  <label>Baby nickname (optional)</label>
                   <input
                     value={profileForm.baby_nickname}
                     onChange={(e) =>
@@ -284,7 +285,7 @@ export default function Dashboard() {
               </div>
 
               <div className="actions-row">
-                <button className="btn" type="submit">
+                <button className="primary" type="submit">
                   Save
                 </button>
               </div>
@@ -292,54 +293,45 @@ export default function Dashboard() {
           ) : null}
         </div>
 
-        {/* NEXT APPOINTMENT */}
-        <div className="card soft tint-sky dashboard-card">
-          <div className="section-header">
-            <div>
-              <h3 style={{ marginBottom: 6 }}>Próxima cita</h3>
-              <span className="badge sky">Upcoming</span>
-            </div>
+        {/* Next appointment */}
+        <div className="card soft dashboard-card">
+          <div className="section-header" style={{ marginBottom: 12 }}>
+            <h3>Next appointment</h3>
           </div>
 
           {loading ? (
             <p className="muted">Loading...</p>
           ) : nextAppointment ? (
             <>
-              <div className="strong" style={{ fontSize: 18 }}>
-                {nextAppointment.title}
-              </div>
+              <div className="strong dashboard-titleText">{nextAppointment.title}</div>
 
-              <div style={{ marginTop: 10 }}>
-                <div className="muted">
-                  Fecha: <span className="strong">{formatDate(nextAppointment.date_time)}</span>
+              {/* Date + Time separated */}
+              <div className="muted dashboard-smallText" style={{ marginTop: 10 }}>
+                <div>
+                  <span className="strong">Date:</span> {formatDateOnly(nextAppointment.date_time)}
                 </div>
-                <div className="muted">
-                  Hora: <span className="strong">{formatTime(nextAppointment.date_time)}</span>
+                <div>
+                  <span className="strong">Time:</span> {formatTimeOnly(nextAppointment.date_time)}
                 </div>
               </div>
 
               <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {/* soporte por si backend aún usa doctor_name */}
-                {(nextAppointment.provider_name || nextAppointment.doctor_name) ? (
-                  <span className="badge mint">
-                    Provider: {nextAppointment.provider_name || nextAppointment.doctor_name}
-                  </span>
+                {nextAppointment.doctor_name ? (
+                  <span className="badge sky">Provider: {nextAppointment.doctor_name}</span>
                 ) : null}
-
                 {nextAppointment.appointment_type ? (
-                  <span className="badge peach">{nextAppointment.appointment_type}</span>
+                  <span className="badge mint">{nextAppointment.appointment_type}</span>
                 ) : null}
               </div>
 
-              <div className="actions-row" style={{ marginTop: 16 }}>
+              <div className="actions-row" style={{ marginTop: 12 }}>
                 <button
-                  className="btn"
                   type="button"
                   onClick={() => navigate(`/appointments/${nextAppointment.id}/edit`)}
                 >
                   Edit
                 </button>
-                <button className="btn" type="button" onClick={() => navigate("/appointments")}>
+                <button type="button" onClick={() => navigate("/appointments")}>
                   View all
                 </button>
               </div>
@@ -347,12 +339,13 @@ export default function Dashboard() {
           ) : (
             <>
               <p className="muted">No upcoming scheduled appointments.</p>
-              <div className="actions-row" style={{ marginTop: 14 }}>
-                <button className="btn" type="button" onClick={() => navigate("/appointments/new")}>
-                  + New
-                </button>
-                <button className="btn" type="button" onClick={() => navigate("/appointments")}>
-                  View all
+              <div className="actions-row" style={{ marginTop: 10 }}>
+                <button
+                  className="primary"
+                  type="button"
+                  onClick={() => navigate("/appointments/new")}
+                >
+                  + New appointment
                 </button>
               </div>
             </>
@@ -360,22 +353,17 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* QUICK ACTIONS */}
-      <section className="card soft tint-mint" style={{ marginTop: 20 }}>
-        <div className="section-header">
-          <div>
-            <h3 style={{ marginBottom: 6 }}>Appointments</h3>
-            <p className="muted" style={{ margin: 0 }}>
-              Crea o revisa tus citas cuando quieras.
-            </p>
-          </div>
+      {/* Keep your existing bottom card */}
+      <section className="card soft" style={{ marginTop: 14 }}>
+        <div className="section-header" style={{ marginBottom: 8 }}>
+          <h3>Appointments</h3>
         </div>
 
         <div className="actions-row">
-          <button className="btn" type="button" onClick={() => navigate("/appointments/new")}>
+          <button className="primary" type="button" onClick={() => navigate("/appointments/new")}>
             + New appointment
           </button>
-          <button className="btn" type="button" onClick={() => navigate("/appointments")}>
+          <button type="button" onClick={() => navigate("/appointments")}>
             View appointments
           </button>
         </div>
@@ -383,5 +371,3 @@ export default function Dashboard() {
     </main>
   );
 }
-
-

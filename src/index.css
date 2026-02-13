@@ -8,7 +8,8 @@
   /* Base colors */
   --bg: #fff4fb;
   --surface: #ffffff;
-  --text: #1f2937;
+  --brand: #7b2a68;   /* o el que estés usando */
+  --text: var(--brand);
   --muted: #6b7280;
   --border: #e6eaf2;
 
@@ -721,4 +722,52 @@ label {
   background: rgba(123, 42, 104, 0.12);
   border-color: rgba(123, 42, 104, 0.28);
   color: var(--brand);
+}
+
+/* Dashboard minimal tweaks */
+.dashboard-grid {
+  align-items: stretch; /* makes both cards equal height */
+}
+
+.dashboard-card {
+  min-height: 260px;   /* same size */
+  padding: 18px;       /* a bit more breathing room */
+}
+
+.dashboard-smallText {
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.dashboard-titleText {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 120ms ease, box-shadow 120ms ease,
+    border-color 120ms ease, background 120ms ease;
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  border-color: rgba(243, 179, 200, 0.55);
+}
+.btn.primary {
+  border: 1px solid rgba(243, 179, 200, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(243, 179, 200, 0.40),
+    rgba(246, 199, 166, 0.35),
+    rgba(169, 214, 255, 0.30)
+  );
 }

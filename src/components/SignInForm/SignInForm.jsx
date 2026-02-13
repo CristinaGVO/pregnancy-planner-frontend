@@ -3,13 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 import { signIn } from "../../services/authService";
 import { UserContext } from "../../contexts/UserContext";
+import logo from "../../assets/pregnancy-planner.png";
 
-export default function SignInForm() {
+const SignInForm = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
 
   const [message, setMessage] = useState("");
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
 
   const handleChange = (evt) => {
     setMessage("");
@@ -31,7 +35,14 @@ export default function SignInForm() {
     <main className="container">
       <section className="card soft">
         <div className="brand" style={{ marginBottom: 12 }}>
-          <div className="brand-mark">🤰</div>
+          <div className="brand-mark brand-mark--nav" style={{ width: 46, height: 46 }}>
+            <img
+              src={logo}
+              alt="Pregnancy Planner logo"
+              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+            />
+          </div>
+
           <div>
             <div className="brand-title">Pregnancy Planner</div>
             <div className="brand-subtitle">Welcome back</div>
@@ -78,4 +89,6 @@ export default function SignInForm() {
       </section>
     </main>
   );
-}
+};
+
+export default SignInForm;
