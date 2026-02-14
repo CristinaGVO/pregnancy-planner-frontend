@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext";
 import { createAppointment } from "../../services/appointmentsService";
 
+import logo from "../../assets/pregnancy-planner.png";
+
 const STATUS_OPTIONS = ["scheduled", "completed", "canceled"];
 
 function isErrorPayload(x) {
@@ -63,7 +65,6 @@ export default function AppointmentNew() {
       if (isErrorPayload(created)) throw new Error(created.error || created.err);
 
       showAlert("success", "Appointment created ✅");
-      // después de crear, llévalo a la lista
       setTimeout(() => navigate("/appointments"), 500);
     } catch (err) {
       showAlert("error", err?.message || "Error creating appointment");
@@ -72,28 +73,26 @@ export default function AppointmentNew() {
 
   return (
     <main className="container">
-      <div className="hero">
+      {/* ✅ Compact hero + centered brand, NO "New" badge */}
+      <div className="hero hero--compact">
         <div className="hero-row">
-          <div>
-            <div className="brand" style={{ marginBottom: 10 }}>
-              <div className="brand-mark">🤰</div>
-              <div>
-                <div className="brand-title">Pregnancy Planner</div>
-                <div className="brand-subtitle">Create appointment</div>
-              </div>
+          <div className="hero-left">
+            <div className="brand-center" style={{ marginBottom: 10 }}>
+              <img className="brand-logo" src={logo} alt="Pregnancy Planner logo" />
+              <div className="brand-title-sm">Pregnancy Planner</div>
+              <div className="brand-subtitle-center">Create appointment</div>
             </div>
 
             <h2 className="hero-title">New appointment</h2>
             <p className="hero-sub">Add your next visit, class, or reminder.</p>
           </div>
-
-          <span className="badge mint">New</span>
         </div>
       </div>
 
       {alert.text ? <div className={`alert ${alert.kind}`}>{alert.text}</div> : null}
 
-      <section className="card soft">
+      {/* ✅ Optional: compact card */}
+      <section className="card soft card--compact">
         <div className="section-header">
           <h3>Appointment details</h3>
           <span className="badge peach">Form</span>

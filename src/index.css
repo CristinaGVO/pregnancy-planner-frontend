@@ -771,3 +771,149 @@ label {
     rgba(169, 214, 255, 0.30)
   );
 }
+/* Dashboard layout helpers */
+.dashboard-cardInner {
+  min-height: 250px;           /* mismo alto en ambas cards */
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-actionsBottom {
+  margin-top: auto;            /* empuja acciones abajo */
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+}
+
+.dashboard-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.dashboard-number {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.dashboard-info {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.brand--lg{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand-logo{
+  height:56px;
+  width:auto;
+  border-radius:12px;
+}
+.brand-title--xl{
+  font-size:2.2rem;
+  font-weight:800;
+  line-height:1.05;
+}
+
+
+
+
+.brand--center{
+  display: flex;
+  flex-direction: column;   
+  align-items: center;       
+  text-align: center;
+  gap: 8px;
+}
+
+.brand-text{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.brand-logo{
+  height: 56px;              
+  width: auto;
+  border-radius: 12px;       
+}
+
+.brand-title--sm{
+  font-size: 1.4rem;         
+  font-weight: 800;
+  line-height: 1.1;
+}
+/* Hace que el bloque del brand tome todo el ancho del hero,
+   aunque estés en un layout de 2 columnas */
+.hero-left{
+  width: 100%;
+}
+
+.brand-center{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centra horizontal */
+  text-align: center;    /* centra el texto */
+  gap: 6px;
+}
+
+.brand-logo{
+  height: 54px;          /* ajusta si quieres */
+  width: auto;
+  border-radius: 12px;   /* opcional */
+}
+
+.brand-title-sm{
+  font-size: 1.35rem;    /* más pequeño */
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.brand-subtitle-center{
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+.hero-row{
+  width: 100%;
+}
+
+.hero-left{
+  flex: 1;        /* ocupa el espacio */
+  min-width: 0;
+}
+
+
+
+.brand--withLogo{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo--sm{
+  height: 44px;  
+  width: auto;
+  border-radius: 12px;
+}
+
+
+
+
+.brand--withLogo{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo--sm{
+  height: 44px; 
+  width: auto;
+  border-radius: 12px;
+}
