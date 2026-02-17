@@ -2,7 +2,7 @@
 
 A full-stack web application built with Flask, PostgreSQL, and React, designed to help expecting parents organize and track their prenatal journey in a structured, secure, and emotionally calm environment.
 
-📌 Overview
+📌 *Overview*
 
 Pregnancy Planner is a secure web application that allows users to:
 
@@ -21,52 +21,35 @@ This project demonstrates full-stack architecture, secure authentication, and re
 
 🖼️*Screenshots*
 
-Landing Page
+
+*Landing Page*
 
 ![alt text](screenshots/pregnancy-planner/landing.png)
 
 
-Login / Register
+*Login / Register*
 
 ![alt text](image.png)
 
-Dashboard
+*Dashboard*
 
 ![alt text](image-1.png)
 
-Appointments List
+*Appointments List*
 ![alt text](image-2.png)
 
-Create Appointment
+*Create Appointment*
 
 ![alt text](image-3.png)
 
-Edit Appointment
+*Edit Appointment*
 
 ![alt text](image-4.png)
 
 
-🧠 Why I Built This
-
-This project was built as part of my transition into software engineering.
-
-I wanted to:
-
-Strengthen my backend development using Python and Flask
-
-Work with relational databases (SQL)
-
-Build a fully functional frontend with React
-
-Solve real-world issues like timezone handling
-
-Focus on clean UI and user experience
-
-
 **Stack Tecnológico**
-🔹 Frontend
 
-Frontend
+🔹 *Frontend*
 
 React
 
@@ -78,7 +61,7 @@ Custom CSS
 
 useMemo (performance optimization)
 
-🔹 Backend
+🔹 *Backend*
 
 Python
 
@@ -90,7 +73,7 @@ JWT Authentication
 
 psycopg2
 
-🔹 Database
+🔹 *Database*
 
 PostgreSQL
 
@@ -110,7 +93,8 @@ Postman
 
 VS Code
 
-🔐 Authentication & Security
+
+🔐 *Authentication & Security*
 
 JWT-based authentication
 
@@ -124,7 +108,7 @@ SQL injection prevention via parameterized queries
 
 Each user can only access their own pregnancy profile and medical appointments.
 
-🧩 Database Model
+🧩 *Database Model*
 
 Relational structure:
 
@@ -132,7 +116,7 @@ Users
 → One-to-one relationship with Pregnancy Profile
 → One-to-many relationship with Appointments
 
-✨ Core Features (MVP)
+✨ *Core Features (MVP)*
 
 User registration
 
@@ -159,7 +143,7 @@ Upcoming appointment preview
 Clean and minimal interface
 
 
-🚀 Stretch Goals (Planned)
+🚀 *Stretch Goals*
 
 Trimester tracking
 
@@ -174,8 +158,7 @@ Notes or journal section
 PDF export
 
 
-
-📎 Project Links
+📎 *Project Links*
 Deployed App:
 GitHub Repositorys
 Backend: https://github.com/CristinaGVO/pregnancy-planner-backend.git
@@ -183,7 +166,6 @@ Frontend: https://github.com/CristinaGVO/pregnancy-planner-frontend.git
 Trello Planning Board: https://trello.com/b/JKaYopnH/proyect-4-pregnancy-planner
 
 
-👩🏽‍💻 Author
+👩🏽‍💻 *Author*
 Cristina Gibney
 Software Engineering Student GA - 2026
-
