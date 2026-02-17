@@ -24,33 +24,33 @@ The application demonstrates:
 ## 🖼️ Screenshots
 
 
-*Landing Page*
+## Landing Page
 
 ![alt text](screenshots/pregnancy-planner/landing.png)
 
 
-*Login / Register*
+## Login / Register
 
 ![alt text](image.png)
 
-*Dashboard*
+## Dashboard
 
 ![alt text](image-1.png)
 
-*Appointments List*
+## Appointments List
 ![alt text](image-2.png)
 
-*Create Appointment*
+## Create Appointment
 
 ![alt text](image-3.png)
 
-*Edit Appointment*
+## Edit Appointment
 
 ![alt text](image-4.png)
 
 ---
 
-##Stack Tecnológico
+## Stack Tecnológico
 
 ## 🔹 Frontend
 
@@ -112,6 +112,9 @@ User-specific data isolation
 SQL injection prevention via parameterized queries
 
 Each user can only access their own pregnancy profile and medical appointments.
+
+---
+
 
 ## 🧩 Database Model
 
@@ -178,15 +181,15 @@ PDF export
 
 ## 📎 Project Links
 
-Deployed App: https://pregnancy-planner.netlify.app
+## Deployed App: https://pregnancy-planner.netlify.app
 
-GitHub Repositorys
+## GitHub Repositorys
 
-Backend: https://github.com/CristinaGVO/pregnancy-planner-backend.git
+- Backend: https://github.com/CristinaGVO/pregnancy-planner-backend.git
 
-Frontend: https://github.com/CristinaGVO/pregnancy-planner-frontend.git
+- Frontend: https://github.com/CristinaGVO/pregnancy-planner-frontend.git
 
-Trello Planning Board: https://trello.com/b/JKaYopnH/proyect-4-pregnancy-planner
+## Trello Planning Board: https://trello.com/b/JKaYopnH/proyect-4-pregnancy-planner
 
 ---
 ## 👩🏽‍💻 Author
