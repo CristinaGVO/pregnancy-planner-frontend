@@ -160,12 +160,14 @@ PDF export
 
 📎 *Project Links*
 
-Deployed App: pregnancy-planner.netlify.app
+Deployed App: https://pregnancy-planner.netlify.app
 
 GitHub Repositorys
 
 Backend: https://github.com/CristinaGVO/pregnancy-planner-backend.git
+
 Frontend: https://github.com/CristinaGVO/pregnancy-planner-frontend.git
+
 Trello Planning Board: https://trello.com/b/JKaYopnH/proyect-4-pregnancy-planner
 
 
