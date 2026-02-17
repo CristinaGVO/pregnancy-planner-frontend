@@ -2,24 +2,26 @@
 
 A full-stack web application built with Flask, PostgreSQL, and React, designed to help expecting parents organize and track their prenatal journey in a structured, secure, and emotionally calm environment.
 
-📌 *Overview*
+---
 
-Pregnancy Planner is a secure web application that allows users to:
+## Overview
 
-Track their estimated due date
+**Pregnancy Planner** is a full-stack web application built with **Flask, PostgreSQL, and React**.
 
-Automatically calculate their current pregnancy week
+It was designed to help expecting parents organize and track their prenatal journey in a structured, secure, and emotionally calm environment.
 
-Manage medical appointments
+The application demonstrates:
 
-View their upcoming appointment
+- Full-stack architecture
+- Secure JWT-based authentication
+- Relational database design with SQL
+- Protected user-specific data
+- Clean and minimal UI design
 
-Keep their data private and protected
-
-This project demonstrates full-stack architecture, secure authentication, and relational database design using SQL.
+---
 
 
-🖼️*Screenshots*
+## 🖼️ Screenshots
 
 
 *Landing Page*
@@ -46,10 +48,11 @@ This project demonstrates full-stack architecture, secure authentication, and re
 
 ![alt text](image-4.png)
 
+---
 
-**Stack Tecnológico**
+##Stack Tecnológico
 
-🔹 *Frontend*
+## 🔹 Frontend
 
 React
 
@@ -61,7 +64,7 @@ Custom CSS
 
 useMemo (performance optimization)
 
-🔹 *Backend*
+## 🔹 Backend
 
 Python
 
@@ -73,7 +76,7 @@ JWT Authentication
 
 psycopg2
 
-🔹 *Database*
+## 🔹 Database
 
 PostgreSQL
 
@@ -83,7 +86,7 @@ Foreign key relationships
 
 Parameterized SQL queries
 
-🔹 Tools
+## 🔹 Tools
 
 Git & GitHub
 
@@ -93,8 +96,10 @@ Postman
 
 VS Code
 
+---
 
-🔐 *Authentication & Security*
+
+## 🔐 Authentication & Security
 
 JWT-based authentication
 
@@ -108,7 +113,7 @@ SQL injection prevention via parameterized queries
 
 Each user can only access their own pregnancy profile and medical appointments.
 
-🧩 *Database Model*
+## 🧩 Database Model
 
 Relational structure:
 
@@ -116,7 +121,9 @@ Users
 → One-to-one relationship with Pregnancy Profile
 → One-to-many relationship with Appointments
 
-✨ *Core Features (MVP)*
+---
+
+## ✨ Core Features (MVP)
 
 User registration
 
@@ -142,8 +149,10 @@ Upcoming appointment preview
 
 Clean and minimal interface
 
+---
 
-🚀 *Stretch Goals*
+
+## 🚀 Stretch Goals
 
 Trimester tracking
 
@@ -157,8 +166,17 @@ Notes or journal section
 
 PDF export
 
+---
 
-📎 *Project Links*
+## Resources
+
+- w3schools
+- Labs and lectures class
+- Mdn
+- Freepik - imagen
+
+
+## 📎 Project Links
 
 Deployed App: https://pregnancy-planner.netlify.app
 
@@ -170,7 +188,7 @@ Frontend: https://github.com/CristinaGVO/pregnancy-planner-frontend.git
 
 Trello Planning Board: https://trello.com/b/JKaYopnH/proyect-4-pregnancy-planner
 
-
-👩🏽‍💻 *Author*
+---
+## 👩🏽‍💻 Author
 Cristina Gibney
-Software Engineering Student GA - 2026
+Software Engineering Student General Assembly - 2026
