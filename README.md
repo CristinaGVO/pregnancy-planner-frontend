@@ -23,19 +23,27 @@ This project demonstrates full-stack architecture, secure authentication, and re
 
 Landing Page
 
-
+![alt text](screenshots/pregnancy-planner/landing.png)
 
 
 Login / Register
 
+![alt text](image.png)
+
 Dashboard
 
+![alt text](image-1.png)
+
 Appointments List
+![alt text](image-2.png)
 
 Create Appointment
 
+![alt text](image-3.png)
+
 Edit Appointment
 
+![alt text](image-4.png)
 
 
 🧠 Why I Built This
