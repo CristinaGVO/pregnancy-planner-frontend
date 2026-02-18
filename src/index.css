@@ -1,28 +1,27 @@
 
 
 :root {
-  /* Typography (más elegante sin instalar fuentes) */
+  
   --font-sans: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
 
-  /* Base colors */
   --bg: #fff4fb;
   --surface: #ffffff;
-  --brand: #7b2a68;   /* o el que estés usando */
+  --brand: #7b2a68;   
   --text: var(--brand);
   --muted: #6b7280;
   --border: #e6eaf2;
 
-  /* Stronger pastel accents */
+ 
   --pink: #f19bbf;
   --peach: #f6b98a;
   --mint: #86dbc3;
   --sky: #7dc0ff;
 
-  /* Brand */
+ 
   --brand-fuchsia: #a10a5f;
 
-  /* UI tokens */
+
   --radius: 18px;
   --shadow-soft: 0 14px 34px rgba(17, 24, 39, 0.10);
   --shadow-lift: 0 18px 46px rgba(17, 24, 39, 0.14);
@@ -79,9 +78,7 @@ h3 { font-size: 1.15rem; }
   padding: 0 18px;
 }
 
-/* ----------------------------
-   Navbar
------------------------------ */
+
 .navbar {
   position: sticky;
   top: 0;
@@ -107,9 +104,7 @@ h3 { font-size: 1.15rem; }
   align-items: center;
 }
 
-/* ----------------------------
-   Brand / Logo
------------------------------ */
+
 .brand {
   display: flex;
   align-items: center;
@@ -128,7 +123,6 @@ h3 { font-size: 1.15rem; }
   overflow: hidden;
 }
 
-/* Logo del NAVBAR más grande y con más “pop” */
 .brand-mark--nav {
   width: 64px;
   height: 64px;
@@ -162,9 +156,7 @@ h3 { font-size: 1.15rem; }
   margin-top: 2px;
 }
 
-/* ----------------------------
-   Cards
------------------------------ */
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -208,7 +200,6 @@ h3 { font-size: 1.15rem; }
 .strong { font-weight: 900; }
 .lead { color: var(--text); margin: 6px 0; }
 
-/* Dashboard layout */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -226,9 +217,6 @@ h3 { font-size: 1.15rem; }
   min-height: 240px;
 }
 
-/* ----------------------------
-   Hero (Dashboard header)
------------------------------ */
 .hero {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -246,9 +234,7 @@ h3 { font-size: 1.15rem; }
   flex-wrap: wrap;
 }
 
-/* ----------------------------
-   Badges
------------------------------ */
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -267,9 +253,7 @@ h3 { font-size: 1.15rem; }
 .badge.mint { background: rgba(134, 219, 195, 0.22); }
 .badge.sky { background: rgba(125, 192, 255, 0.22); }
 
-/* ----------------------------
-   Buttons (TODOS iguales)
------------------------------ */
+
 button,
 .btn {
   appearance: none;
@@ -311,9 +295,6 @@ button:active,
   transform: translateY(0);
 }
 
-/* ----------------------------
-   Inputs
------------------------------ */
 input,
 textarea,
 select {
@@ -348,7 +329,7 @@ label {
   font-weight: 900;
 }
 
-/* Forms */
+
 .form-grid { display: grid; gap: 14px; }
 
 .grid-2 {
@@ -426,7 +407,6 @@ label {
   border-radius: 14px;
 }
 
-/* Page toolbars */
 .toolbar {
   display: flex;
   align-items: center;
@@ -450,33 +430,26 @@ label {
   flex-wrap: wrap;
 }
 
-/* =========================
-   NavBar upgrades (your exact structure)
-   - more left
-   - bigger logo
-   - elegant unique title
-========================= */
 
-/* Push navbar content left (remove strong centering) */
+
+
 .navbar-inner--left {
-  max-width: none;     /* overrides the 920px centering constraint */
-  margin: 0;           /* no center */
-  padding-left: 24px;  /* left aligned */
+  max-width: none;    
+  margin: 0;           
+  padding-left: 24px;  
   padding-right: 24px;
   justify-content: flex-start;
 }
 
-/* Keep links on the right */
+
 .navbar-inner--left .nav-links {
   margin-left: auto;
 }
 
-/* Make brand area a bit roomier */
 .brand-link {
   gap: 14px;
 }
 
-/* Bigger logo container */
 .brand-mark--nav {
   width: 64px;
   height: 64px;
@@ -484,15 +457,13 @@ label {
   overflow: hidden;
 }
 
-/* Bigger image inside */
 .brand-logo {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.08); /* subtle pop */
+  transform: scale(1.08); 
 }
 
-/* Elegant unique title (no external font install) */
 .brand-title--app {
   font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 1.45rem;
@@ -500,22 +471,20 @@ label {
   letter-spacing: -0.035em;
   line-height: 1.05;
 
-  /* dark fuchsia */
+
   color: #8a145e;
 }
 
-/* Slightly nicer subtitle spacing */
+
 .brand-subtitle {
   margin-top: 4px;
 }
 
-/* ----------------------------
-   Landing (proportional + softer purple)
------------------------------ */
+
 
 :root {
-  --brand: #7b2a68;        /* title purple */
-  --brand-soft: #8a5a7c;   /* softer purple for CTA text */
+  --brand: #7b2a68;        
+  --brand-soft: #8a5a7c;   
 }
 
 .landing-card {
@@ -530,8 +499,8 @@ label {
 
   display: flex;
   flex-direction: column;
-  gap: 16px;            /* ✅ consistent spacing */
-  min-height: 66vh;     /* ✅ big but not too tall */
+  gap: 16px;            
+  min-height: 66vh;     
 }
 
 /* HERO */
@@ -544,7 +513,7 @@ label {
 .landing-hero--center {
   justify-content: center;
   text-align: center;
-  flex-direction: column; /* logo arriba, texto abajo */
+  flex-direction: column; 
 }
 
 .landing-logo {
@@ -611,13 +580,13 @@ label {
   color: var(--muted);
 }
 
-/* SPACER keeps CTA lower without huge gaps */
+
 .landing-spacer {
   flex: 1;
   min-height: 8px;
 }
 
-/* CTA */
+
 .landing-cta {
   text-align: center;
   padding: 16px;
@@ -633,7 +602,7 @@ label {
 
 .landing-ctaText {
   margin: 0 0 10px 0;
-  color: var(--brand-soft);  /* ✅ softer purple */
+  color: var(--brand-soft); 
   font-weight: 800;
 }
 
@@ -649,29 +618,27 @@ label {
   text-decoration: underline;
 }
 
-/* CTA: bigger text */
 .landing-ctaText {
-  font-size: 1.05rem;     /* más grande */
+  font-size: 1.05rem;     
   line-height: 1.35;
-  margin: 0 0 14px 0;     /* más aire antes del botón */
+  margin: 0 0 14px 0;     
   color: var(--brand-soft);
   font-weight: 900;
 }
 
-/* push CTA a bit further down (without huge gaps) */
+
 .landing-spacer {
-  flex: 1.25;             /* antes estaba 1 */
-  min-height: 18px;       /* más espacio mínimo */
+  flex: 1.25;             
+  min-height: 18px;       
 }
 
-/* Landing: feature titles same color as main title */
+
 .landing-featureTitle {
   color: var(--brand);
   font-weight: 900;
 }
 
 
-/* CTA bottom box (minimal, 2 equal buttons) */
 .landing-cta {
   margin-top: auto;
   padding-top: 28px;
@@ -682,7 +649,7 @@ label {
   margin: 0 0 14px 0;
   font-size: 1.05rem;
   font-weight: 900;
-  color: var(--brand); /* mismo color del título Pregnancy Planner */
+  color: var(--brand); 
 }
 
 .landing-ctaButtons {
@@ -692,7 +659,7 @@ label {
   flex-wrap: wrap;
 }
 
-/* Two equal buttons */
+
 .landing-ctaBtn {
   min-width: 180px;
   padding: 12px 14px;
@@ -711,7 +678,6 @@ label {
   box-shadow: var(--shadow-soft);
 }
 
-/* Soft colors */
 .landing-ctaBtn--primary {
   background: rgba(123, 42, 104, 0.12);
   border-color: rgba(123, 42, 104, 0.28);
@@ -724,14 +690,13 @@ label {
   color: var(--brand);
 }
 
-/* Dashboard minimal tweaks */
 .dashboard-grid {
-  align-items: stretch; /* makes both cards equal height */
+  align-items: stretch; 
 }
 
 .dashboard-card {
-  min-height: 260px;   /* same size */
-  padding: 18px;       /* a bit more breathing room */
+  min-height: 260px;   
+  padding: 18px;       
 }
 
 .dashboard-smallText {
@@ -771,15 +736,15 @@ label {
     rgba(169, 214, 255, 0.30)
   );
 }
-/* Dashboard layout helpers */
+
 .dashboard-cardInner {
-  min-height: 250px;           /* mismo alto en ambas cards */
+  min-height: 250px;           
   display: flex;
   flex-direction: column;
 }
 
 .dashboard-actionsBottom {
-  margin-top: auto;            /* empuja acciones abajo */
+  margin-top: auto;            
   display: flex;
   gap: 10px;
   flex-wrap: wrap;

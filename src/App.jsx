@@ -8,7 +8,7 @@ import Landing from "./components/Landing/Landing";
 import Dashboard from "./components/Dashboard/Dashboard";
 import AppointmentsIndex from "./components/AppointmentsIndex/AppointmentsIndex";
 import AppointmentEdit from "./components/AppointmentEdit/AppointmentEdit";
-// si ya tienes el page de create:
+
 import AppointmentNew from "./components/AppointmentNew/AppointmentNew";
 
 import { UserContext } from "./contexts/UserContext";
