@@ -58,11 +58,9 @@ React
 
 React Router
 
-Context API
 
-Custom CSS
+CSS Style
 
-useMemo (performance optimization)
 
 ## 🔹 Backend
 
@@ -84,7 +82,7 @@ Relational schema design
 
 Foreign key relationships
 
-Parameterized SQL queries
+SQL queries
 
 ## 🔹 Tools
 
