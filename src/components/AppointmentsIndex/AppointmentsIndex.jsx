@@ -150,8 +150,8 @@ export default function AppointmentsIndex() {
                   </div>
 
                   <div className="meta">
-                    <span>Fecha: {formatDate(a.date_time)}</span>
-                    <span>Hora: {formatTime(a.date_time)}</span>
+                    <span>Date: {formatDate(a.date_time)}</span>
+                    <span>Time: {formatTime(a.date_time)}</span>
 
                     {(a.provider_name || a.doctor_name) ? (
                       <span>Provider: {a.provider_name || a.doctor_name}</span>
